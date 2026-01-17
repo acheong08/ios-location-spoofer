@@ -5,7 +5,6 @@
 //  Created by Antonio on 10/09/2025.
 //
 
-import Logging
 import NetworkExtension
 import os.log
 
@@ -13,7 +12,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     private let proxyPort: Int = 8888
     private let proxyHost = "127.0.0.1"
-    private let logger = Logging.Logger(label: "PacketTunnelProvider")
     private let configuration = LocationConfiguration.shared
 
     // Go location spoofer proxy integration
@@ -22,31 +20,29 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     override func startTunnel(
         options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void
     ) {
-        os_log("Tunnel extension starting...", log: OSLog.default, type: .info)
-        os_log("Starting tunnel with location spoofing Go proxy", log: OSLog.default, type: .info)
+        os_log("Tunnel starting...", log: OSLog.default, type: .info)
 
-        goLocationSpoofer = GoLocationSpoofer(logger: logger)
+        goLocationSpoofer = GoLocationSpoofer()
 
         goLocationSpoofer?.hello()
         let version = goLocationSpoofer?.version() ?? "unknown"
-        os_log("Go Location Spoofer library version: %@", log: OSLog.default, type: .info, version)
+        os_log("Go spoofer library version: %@", log: OSLog.default, type: .info, version)
 
         let coords = getSpoofedCoordinates()
         if let lat = coords.latitude, let lon = coords.longitude {
-            os_log("Location spoofing enabled: %f, %f", log: OSLog.default, type: .info, lat, lon)
+            os_log("Location spoofing active: %.6f, %.6f", log: OSLog.default, type: .info, lat, lon)
         } else {
-            os_log("No coordinates configured, running in transparent mode", log: OSLog.default, type: .debug)
+            os_log("No coordinates configured - running in transparent mode", log: OSLog.default, type: .info)
         }
 
         guard let proxy = goLocationSpoofer, proxy.startProxy(lat: coords.latitude, lon: coords.longitude) else {
             let error = TunnelError.proxyServerFailed
-            os_log(
-                "Failed to start Go location spoofing proxy", log: OSLog.default,
-                type: .error)
+            os_log("Failed to start Go location spoofing proxy", log: OSLog.default, type: .error)
             completionHandler(error)
             return
         }
 
+        os_log("Go proxy started successfully", log: OSLog.default, type: .info)
         startTunnelWithProxy(completionHandler: completionHandler)
     }
 
@@ -67,15 +63,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         setTunnelNetworkSettings(tunnelSettings) { error in
             if let error = error {
-                os_log(
-                    "Failed to set tunnel network settings: %@", log: OSLog.default, type: .error,
-                    error.localizedDescription)
+                os_log("Failed to set tunnel network settings: %@", log: OSLog.default, type: .error, error.localizedDescription)
                 completionHandler(error)
             } else {
-                os_log(
-                    "Tunnel started successfully with location spoofing proxy",
-                    log: OSLog.default,
-                    type: .info)
+                os_log("Tunnel started successfully", log: OSLog.default, type: .info)
                 completionHandler(nil)
             }
         }
@@ -132,13 +123,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     override func stopTunnel(
         with reason: NEProviderStopReason, completionHandler: @escaping () -> Void
     ) {
-        os_log("Stopping tunnel, reason: %@", log: OSLog.default, type: .info, reason.rawValue)
+        os_log("Tunnel stopping, reason: %ld", log: OSLog.default, type: .info, reason.rawValue)
 
         if let proxy = goLocationSpoofer {
             if proxy.stopProxy() {
-                os_log("Go location spoofing proxy stopped successfully", log: OSLog.default, type: .info)
+                os_log("Go proxy stopped successfully", log: OSLog.default, type: .info)
             } else {
-                os_log("Failed to stop Go location spoofing proxy", log: OSLog.default, type: .error)
+                os_log("Failed to stop Go proxy", log: OSLog.default, type: .error)
             }
         }
 

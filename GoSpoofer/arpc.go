@@ -107,59 +107,45 @@ func ArpcDeserialize(data []byte) *ArpcRequest {
 
 	versionBytes := make([]byte, 2)
 	if _, err := r.Read(versionBytes); err != nil {
-		fmt.Printf("Failed to read version: %v\n", err)
 		return nil
 	}
 	remaining -= 2
 	version := binary.BigEndian.Uint16(versionBytes)
-	fmt.Printf("Version: %d, remaining: %d\n", version, remaining)
 
 	locale, err := readPascalString(r, &remaining)
 	if err != nil {
-		fmt.Printf("Failed to read locale: %v\n", err)
 		return nil
 	}
-	fmt.Printf("Locale: '%s', remaining: %d\n", locale, remaining)
 
 	appIdentifier, err := readPascalString(r, &remaining)
 	if err != nil {
-		fmt.Printf("Failed to read appIdentifier: %v\n", err)
 		return nil
 	}
-	fmt.Printf("AppIdentifier: '%s', remaining: %d\n", appIdentifier, remaining)
 
 	osVersion, err := readPascalString(r, &remaining)
 	if err != nil {
-		fmt.Printf("Failed to read osVersion: %v\n", err)
 		return nil
 	}
-	fmt.Printf("OsVersion: '%s', remaining: %d\n", osVersion, remaining)
 
 	unknownBytes := make([]byte, 4)
 	if _, err := r.Read(unknownBytes); err != nil {
-		fmt.Printf("Failed to read unknownBytes: %v\n", err)
 		return nil
 	}
 	remaining -= 4
 	functionId := int(binary.BigEndian.Uint32(unknownBytes))
-	fmt.Printf("FunctionId: %d, remaining: %d\n", functionId, remaining)
 
 	payloadLenBytes := make([]byte, 4)
 	if _, err := r.Read(payloadLenBytes); err != nil {
-		fmt.Printf("Failed to read payloadLenBytes: %v\n", err)
 		return nil
 	}
 	remaining -= 4
 	payloadLen := int(binary.BigEndian.Uint32(payloadLenBytes))
-	fmt.Printf("PayloadLen: %d, remaining: %d\n", payloadLen, remaining)
 
 	if int64(payloadLen) > remaining {
-		fmt.Printf("Payload length %d exceeds remaining %d\n", payloadLen, remaining)
 		return nil
 	}
 	payload := make([]byte, payloadLen)
 	if _, err := r.Read(payload); err != nil {
-		fmt.Printf("Failed to read payload: %v\n", err)
 		return nil
 	}
 

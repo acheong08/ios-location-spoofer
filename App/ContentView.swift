@@ -8,6 +8,7 @@
 import SwiftUI
 import NetworkExtension
 import UIKit
+import os.log
 
 struct ContentView: View {
     @State private var vpnStatus: NEVPNStatus = .invalid
@@ -156,7 +157,6 @@ extension ContentView {
         NETunnelProviderManager.loadAllFromPreferences { managers, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("Error loading VPN configurations: \(error)")
                     self.needsVPNInstallation = true
                     return
                 }
@@ -191,18 +191,17 @@ extension ContentView {
     private func installVPNProfile() {
         guard !isConnecting else { return }
         isConnecting = true
-        
+
         let manager = makeManager()
         manager.saveToPreferences { error in
             DispatchQueue.main.async {
                 self.isConnecting = false
-                
+
                 if let error = error {
-                    print("Failed to save VPN configuration: \(error)")
                     self.installationError = "Failed to install VPN profile: \(error.localizedDescription)"
                     self.showingInstallationAlert = true
                 } else {
-                    print("VPN configuration saved successfully")
+                    os_log("VPN profile installed successfully", log: OSLog.default, type: .info)
                     self.loadVPNConfiguration()
                 }
             }
@@ -230,13 +229,11 @@ extension ContentView {
         NETunnelProviderManager.loadAllFromPreferences { managers, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("Error loading VPN configurations: \(error)")
                     self.needsVPNInstallation = true
                     return
                 }
                 
                 guard let manager = managers?.first else {
-                    print("No VPN configuration found")
                     self.needsVPNInstallation = true
                     return
                 }
@@ -250,7 +247,6 @@ extension ContentView {
                     do {
                         try manager.connection.startVPNTunnel()
                     } catch {
-                        print("Failed to start VPN: \(error)")
                         self.isConnecting = false
                     }
                 @unknown default:

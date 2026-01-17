@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os.log
 
 struct Coordinates {
     let latitude: Double
@@ -47,16 +48,16 @@ class LocationConfiguration: ObservableObject {
         userDefaults.set(latitude, forKey: Keys.latitude)
         userDefaults.set(longitude, forKey: Keys.longitude)
         userDefaults.synchronize()
-        
-        print("Coordinates set to: \(latitude), \(longitude)")
+
+        os_log("Coordinates updated: %.6f, %.6f", log: OSLog.default, type: .info, latitude, longitude)
     }
-    
+
     func clearCoordinates() {
         userDefaults.removeObject(forKey: Keys.latitude)
         userDefaults.removeObject(forKey: Keys.longitude)
         userDefaults.synchronize()
-        
-        print("Coordinates cleared")
+
+        os_log("Coordinates cleared - transparent mode", log: OSLog.default, type: .info)
     }
     
     func synchronize() {

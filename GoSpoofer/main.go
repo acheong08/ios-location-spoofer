@@ -49,14 +49,12 @@ func p64(i int) *int64 {
 
 //export golocationspoofer_hello
 func golocationspoofer_hello() {
-	println("Hello from Go Location Spoofer!")
 }
 
 // golocationspoofer_init is called from Swift to set up panic recovery
 //
 //export golocationspoofer_init
 func golocationspoofer_init() {
-	println("Go Location Spoofer initialized")
 }
 
 //export golocationspoofer_version
@@ -77,17 +75,13 @@ func golocationspoofer_generateca() (r0, r1 *C.char) {
 func golocationspoofer_startproxy(certData *C.char, keyData *C.char, lat C.double, lon C.double, enabled C.int) C.uintptr_t {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("RECOVERED FROM PANIC in startproxy: %v", r)
+			log.Printf("PANIC in startproxy: %v", r)
 		}
 	}()
-
-	log.Printf("Go startproxy called: lat=%f lon=%f enabled=%d", float64(lat), float64(lon), enabled)
 
 	spoofLat = float64(lat)
 	spoofLon = float64(lon)
 	spoofingEnabled = enabled != 0
-
-	log.Printf("Starting location spoofer with coords: %f, %f (enabled: %v)", spoofLat, spoofLon, spoofingEnabled)
 
 	if certData != nil && keyData != nil {
 		certPEM := C.GoString(certData)
@@ -95,29 +89,23 @@ func golocationspoofer_startproxy(certData *C.char, keyData *C.char, lat C.doubl
 
 		parsedCert, err := parseCA([]byte(certPEM), []byte(keyPEM))
 		if err != nil {
-			log.Printf("Failed to parse CA: %v", err)
+			log.Printf("Failed to parse CA cert: %v", err)
 			return 0
 		}
 		globalCACert = parsedCert
-		log.Printf("CA certificate parsed successfully")
-	} else {
-		log.Printf("WARNING: No certificates provided, MITM disabled")
+		log.Printf("Location spoofer: MITM enabled, coordinates: %.6f, %.6f", spoofLat, spoofLon)
 	}
 
 	proxy := goproxy.NewProxyHttpServer()
-	proxy.Verbose = true
+	proxy.Verbose = false
 
 	if globalCACert != nil {
 		setupMITM(proxy, globalCACert)
 		setupCertServing(proxy, globalCACert)
-		log.Printf("MITM configured")
-	} else {
-		log.Printf("WARNING: globalCACert is nil, MITM will not work")
 	}
 
 	if spoofingEnabled {
 		setupLocationSpoofing(proxy)
-		log.Printf("Location spoofing configured for gs-loc.apple.com")
 	}
 
 	srv := &http.Server{
@@ -129,7 +117,7 @@ func golocationspoofer_startproxy(certData *C.char, keyData *C.char, lat C.doubl
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("RECOVERED FROM PANIC in HTTP server goroutine: %v", r)
+				log.Printf("PANIC in HTTP server: %v", r)
 			}
 		}()
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -137,7 +125,7 @@ func golocationspoofer_startproxy(certData *C.char, keyData *C.char, lat C.doubl
 		}
 	}()
 
-	log.Printf("HTTP server started on 127.0.0.1:8888, returning handle: %d", h)
+	log.Printf("Proxy server started on 127.0.0.1:8888")
 	return C.uintptr_t(h)
 }
 
@@ -168,13 +156,11 @@ func setupMITM(proxy *goproxy.ProxyHttpServer, cert *tls.Certificate) {
 	}
 
 	var customMitmHandler goproxy.FuncHttpsHandler = func(host string, ctx *goproxy.ProxyCtx) (*goproxy.ConnectAction, string) {
-		// Only MITM the location service domains
 		hostname := strings.Split(host, ":")[0]
 		if hostname == "gs-loc.apple.com" || hostname == "gs-loc-cn.apple.com" {
-			log.Printf("MITM intercepting location service: %s", host)
+			log.Printf("Intercepting location request: %s", host)
 			return customCaMitm, host
 		}
-		// For all other domains, just pass through (tunnel without MITM)
 		return goproxy.OkConnect, host
 	}
 
@@ -202,7 +188,6 @@ func setupLocationSpoofing(proxy *goproxy.ProxyHttpServer) {
 	proxy.OnRequest().DoFunc(func(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 		if req.Host == "gs-loc.apple.com" || req.Host == "gs-loc-cn.apple.com" {
 			if req.URL.Path == "/clls/wloc" && req.Method == "POST" {
-				log.Println("Intercepting location request")
 				return handleLocationRequest(req)
 			}
 		}
@@ -213,7 +198,7 @@ func setupLocationSpoofing(proxy *goproxy.ProxyHttpServer) {
 func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("RECOVERED FROM PANIC in handleLocationRequest: %v", r)
+			log.Printf("PANIC in handleLocationRequest: %v", r)
 		}
 	}()
 
@@ -224,20 +209,10 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 		return req, nil
 	}
 
-	log.Printf("Read %d bytes from request body", len(body))
-	printBytes := body
-	if len(printBytes) > 50 {
-		printBytes = printBytes[:50]
-	}
-	log.Printf("First 50 bytes: %x", printBytes)
-
 	arpc := ArpcDeserialize(body)
 	if arpc == nil {
-		log.Printf("Failed to deserialize ARPC")
 		return req, nil
 	}
-
-	log.Printf("ARPC deserialized, payload size: %d bytes", len(arpc.Payload))
 
 	wloc := &pb.AppleWLoc{}
 	if err := proto.Unmarshal(arpc.Payload, wloc); err != nil {
@@ -245,7 +220,8 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 		return req, nil
 	}
 
-	log.Printf("Parsed AppleWLoc, wifi devices: %d", len(wloc.WifiDevices))
+	wifiCount := len(wloc.WifiDevices)
+	log.Printf("Spoofing location for %d WiFi devices", wifiCount)
 
 	lat := IntFromCoord(spoofLat)
 	lon := IntFromCoord(spoofLon)
@@ -256,8 +232,7 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 	motionActivityType := int64(63)
 	motionActivityConfidence := int64(467)
 
-	for i, device := range wloc.WifiDevices {
-		log.Printf("Spoofing location for BSSID: %s (index %d)", device.GetBssid(), i)
+	for _, device := range wloc.WifiDevices {
 		if device.Location == nil {
 			device.Location = &pb.Location{}
 		}
@@ -281,10 +256,7 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 		log.Printf("Failed to serialize protobuf: %v", err)
 		return req, nil
 	}
-	log.Printf("Serialized spoofed AppleWLoc: %d bytes", len(responseBytes))
-	log.Printf("Response bytes: %x", responseBytes)
 
-	log.Printf("Sending spoofed response (%d bytes)", len(responseBytes))
 	resp := &http.Response{
 		Request:       req,
 		StatusCode:    http.StatusOK,
