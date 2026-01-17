@@ -1,0 +1,588 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		069D2DA488871331C1570CDD /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1A448A024912E5C0C1B224 /* NetworkExtension.framework */; };
+		268C86E6F4E47C957CD36D57 /* GoLocationSpoofer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39104973165BCC05DD24A29 /* GoLocationSpoofer.swift */; };
+		3C9DB8643C9203C44CAF40AF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5254CDFD133A13476AE2AF /* ContentView.swift */; };
+		52F0E3807FF47779CDFAE271 /* CoordinateInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D64E112D2AC008374EF191 /* CoordinateInputView.swift */; };
+		54E76E1073DFE78B6C6DB93B /* libgolocationspoofer.a in Resources */ = {isa = PBXBuildFile; fileRef = 23337A02247D09C30D523817 /* libgolocationspoofer.a */; };
+		70AB670271233CE16623001B /* LocationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5331D5ACB7EA6F706F801C6 /* LocationConfiguration.swift */; };
+		84BD98C3C4B1CD653B5F1998 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A434E903E691E1D2443178 /* PacketTunnelProvider.swift */; };
+		8E13A724528DB7D3333AC84C /* location-spoofer-tunnel.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D8D757F13BAAC8E71496C7AF /* location-spoofer-tunnel.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9E99EEB5A95845A2D311B143 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CFF77E36A77F6B247F9B6D8 /* Assets.xcassets */; };
+		A4630568A5A8948065B9BE4A /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 740A872CAF7C917570E3FF24 /* NIOPosix */; };
+		CC32CBF9711DF55C9C563DE1 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 30149F3B8712F23CAB233B66 /* Logging */; };
+		D6161A240E7070DD28331FD2 /* location_spooferApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A149FA6A5DC44E8C88A1C2F /* location_spooferApp.swift */; };
+		F81CD0549A59B87876C274D7 /* LocationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE17083883692D03165972E /* LocationConfiguration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9BCC5E4A7617041DF1D951DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF37F0FEE9EBB6EA978A4FE2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05BE400C38853567CF92D63D;
+			remoteInfo = "location-spoofer-tunnel";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D77FC4BF33E944B750A49DD3 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8E13A724528DB7D3333AC84C /* location-spoofer-tunnel.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		104A1AEBB47DC335637D19AD /* location-spoofer-tunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "location-spoofer-tunnel.entitlements"; sourceTree = "<group>"; };
+		1853DA22B29EE6663FF59682 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1A149FA6A5DC44E8C88A1C2F /* location_spooferApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = location_spooferApp.swift; sourceTree = "<group>"; };
+		224FCEBD569F7C92B3B1B929 /* golocationspoofer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = golocationspoofer.h; sourceTree = "<group>"; };
+		23337A02247D09C30D523817 /* libgolocationspoofer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgolocationspoofer.a; sourceTree = "<group>"; };
+		39D64E112D2AC008374EF191 /* CoordinateInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateInputView.swift; sourceTree = "<group>"; };
+		3DE17083883692D03165972E /* LocationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationConfiguration.swift; sourceTree = "<group>"; };
+		5737967BEF59669E52D3D4B0 /* location-spoofer.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "location-spoofer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CFF77E36A77F6B247F9B6D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6E18131A58929A987A008A9B /* location-spoofer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "location-spoofer.entitlements"; sourceTree = "<group>"; };
+		93A434E903E691E1D2443178 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		C39104973165BCC05DD24A29 /* GoLocationSpoofer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoLocationSpoofer.swift; sourceTree = "<group>"; };
+		CD5254CDFD133A13476AE2AF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D5331D5ACB7EA6F706F801C6 /* LocationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationConfiguration.swift; sourceTree = "<group>"; };
+		D7515D8D97AD558129141B40 /* libgolocationspoofer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgolocationspoofer.a; sourceTree = "<group>"; };
+		D8D757F13BAAC8E71496C7AF /* location-spoofer-tunnel.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = "location-spoofer-tunnel.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E44E9A2EB20430E3EC632ACB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EA1A448A024912E5C0C1B224 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		F5260FBDE7553CFC5121A859 /* libgolocationspoofer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libgolocationspoofer.h; sourceTree = "<group>"; };
+		FBFA1C54411CE6D6F972A0AE /* location-spoofer-tunnel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "location-spoofer-tunnel-Bridging-Header.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E585ED2186E44805FE07AA4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4630568A5A8948065B9BE4A /* NIOPosix in Frameworks */,
+				CC32CBF9711DF55C9C563DE1 /* Logging in Frameworks */,
+				069D2DA488871331C1570CDD /* NetworkExtension.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		04FD984DDE060E69CBCED4FD /* Tunnel */ = {
+			isa = PBXGroup;
+			children = (
+				C39104973165BCC05DD24A29 /* GoLocationSpoofer.swift */,
+				E44E9A2EB20430E3EC632ACB /* Info.plist */,
+				FBFA1C54411CE6D6F972A0AE /* location-spoofer-tunnel-Bridging-Header.h */,
+				104A1AEBB47DC335637D19AD /* location-spoofer-tunnel.entitlements */,
+				3DE17083883692D03165972E /* LocationConfiguration.swift */,
+				93A434E903E691E1D2443178 /* PacketTunnelProvider.swift */,
+			);
+			path = Tunnel;
+			sourceTree = "<group>";
+		};
+		67FEB4ED642B1A04D65931CC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6CFF77E36A77F6B247F9B6D8 /* Assets.xcassets */,
+				1853DA22B29EE6663FF59682 /* Info.plist */,
+				6E18131A58929A987A008A9B /* location-spoofer.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		7641DE3EEC0D43068BD5FFD6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EA1A448A024912E5C0C1B224 /* NetworkExtension.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B4E4622044DFB3E5F8DDBE2A = {
+			isa = PBXGroup;
+			children = (
+				DC92D01FB6A36C2CB723C07A /* App */,
+				B600CC4C1C0CD995589CFC7D /* build */,
+				C628EE71A531D3540CA4A63B /* GoSpoofer */,
+				67FEB4ED642B1A04D65931CC /* Resources */,
+				04FD984DDE060E69CBCED4FD /* Tunnel */,
+				7641DE3EEC0D43068BD5FFD6 /* Frameworks */,
+				E5209E15B8DD53568A36A31A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B600CC4C1C0CD995589CFC7D /* build */ = {
+			isa = PBXGroup;
+			children = (
+				D7515D8D97AD558129141B40 /* libgolocationspoofer.a */,
+			);
+			name = build;
+			path = GoSpoofer/build;
+			sourceTree = "<group>";
+		};
+		C628EE71A531D3540CA4A63B /* GoSpoofer */ = {
+			isa = PBXGroup;
+			children = (
+				224FCEBD569F7C92B3B1B929 /* golocationspoofer.h */,
+				23337A02247D09C30D523817 /* libgolocationspoofer.a */,
+				F5260FBDE7553CFC5121A859 /* libgolocationspoofer.h */,
+			);
+			path = GoSpoofer;
+			sourceTree = "<group>";
+		};
+		DC92D01FB6A36C2CB723C07A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CD5254CDFD133A13476AE2AF /* ContentView.swift */,
+				39D64E112D2AC008374EF191 /* CoordinateInputView.swift */,
+				1A149FA6A5DC44E8C88A1C2F /* location_spooferApp.swift */,
+				D5331D5ACB7EA6F706F801C6 /* LocationConfiguration.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E5209E15B8DD53568A36A31A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D8D757F13BAAC8E71496C7AF /* location-spoofer-tunnel.appex */,
+				5737967BEF59669E52D3D4B0 /* location-spoofer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		05BE400C38853567CF92D63D /* location-spoofer-tunnel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4612EC6F063A0FBF1D77BC82 /* Build configuration list for PBXNativeTarget "location-spoofer-tunnel" */;
+			buildPhases = (
+				804E787D400147C0B66917B1 /* Sources */,
+				4F1C6FC39464ECE8929B1F27 /* Resources */,
+				E585ED2186E44805FE07AA4C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "location-spoofer-tunnel";
+			packageProductDependencies = (
+				740A872CAF7C917570E3FF24 /* NIOPosix */,
+				30149F3B8712F23CAB233B66 /* Logging */,
+			);
+			productName = "location-spoofer-tunnel";
+			productReference = D8D757F13BAAC8E71496C7AF /* location-spoofer-tunnel.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		355368F9AAA53B0D37577ED8 /* location-spoofer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8C757F65FC720F6CAF861942 /* Build configuration list for PBXNativeTarget "location-spoofer" */;
+			buildPhases = (
+				80BB3E26989DAB7FD69DF190 /* Sources */,
+				39C85B1AF9627477263D7106 /* Resources */,
+				D77FC4BF33E944B750A49DD3 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DF7D7CD8E6BFD8F0707C861E /* PBXTargetDependency */,
+			);
+			name = "location-spoofer";
+			packageProductDependencies = (
+			);
+			productName = "location-spoofer";
+			productReference = 5737967BEF59669E52D3D4B0 /* location-spoofer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AF37F0FEE9EBB6EA978A4FE2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					05BE400C38853567CF92D63D = {
+						DevelopmentTeam = RL3VF87PQT;
+					};
+					355368F9AAA53B0D37577ED8 = {
+						DevelopmentTeam = RL3VF87PQT;
+					};
+				};
+			};
+			buildConfigurationList = 040F41B664963D6A69EF2C42 /* Build configuration list for PBXProject "location-spoofer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B4E4622044DFB3E5F8DDBE2A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7881FD145BC3CD4CC103A32E /* XCRemoteSwiftPackageReference "swift-nio" */,
+				5A9E72E64AEA73DC79B7A4AE /* XCRemoteSwiftPackageReference "swift-log" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				355368F9AAA53B0D37577ED8 /* location-spoofer */,
+				05BE400C38853567CF92D63D /* location-spoofer-tunnel */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		39C85B1AF9627477263D7106 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9E99EEB5A95845A2D311B143 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F1C6FC39464ECE8929B1F27 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54E76E1073DFE78B6C6DB93B /* libgolocationspoofer.a in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		804E787D400147C0B66917B1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				268C86E6F4E47C957CD36D57 /* GoLocationSpoofer.swift in Sources */,
+				F81CD0549A59B87876C274D7 /* LocationConfiguration.swift in Sources */,
+				84BD98C3C4B1CD653B5F1998 /* PacketTunnelProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		80BB3E26989DAB7FD69DF190 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C9DB8643C9203C44CAF40AF /* ContentView.swift in Sources */,
+				52F0E3807FF47779CDFAE271 /* CoordinateInputView.swift in Sources */,
+				70AB670271233CE16623001B /* LocationConfiguration.swift in Sources */,
+				D6161A240E7070DD28331FD2 /* location_spooferApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DF7D7CD8E6BFD8F0707C861E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05BE400C38853567CF92D63D /* location-spoofer-tunnel */;
+			targetProxy = 9BCC5E4A7617041DF1D951DC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		45060551A7A36B0BE99CE58A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/location-spoofer.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		691CB251C96D30694B539FB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Tunnel/location-spoofer-tunnel.entitlements";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/GoSpoofer",
+				);
+				INFOPLIST_FILE = Tunnel/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/GoSpoofer/build",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lgolocationspoofer",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer.tunnel";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Tunnel/location-spoofer-tunnel-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6F0959D1466BAC43F8FFF30D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RL3VF87PQT;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		813DBC56B79E55CF268A0570 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/location-spoofer.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		87B4551CA329AE1565F12351 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = RL3VF87PQT;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		B8D2136368E194C40C3B9488 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Tunnel/location-spoofer-tunnel.entitlements";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/GoSpoofer",
+				);
+				INFOPLIST_FILE = Tunnel/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/GoSpoofer/build",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lgolocationspoofer",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer.tunnel";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Tunnel/location-spoofer-tunnel-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		040F41B664963D6A69EF2C42 /* Build configuration list for PBXProject "location-spoofer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F0959D1466BAC43F8FFF30D /* Debug */,
+				87B4551CA329AE1565F12351 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4612EC6F063A0FBF1D77BC82 /* Build configuration list for PBXNativeTarget "location-spoofer-tunnel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				691CB251C96D30694B539FB5 /* Debug */,
+				B8D2136368E194C40C3B9488 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8C757F65FC720F6CAF861942 /* Build configuration list for PBXNativeTarget "location-spoofer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				45060551A7A36B0BE99CE58A /* Debug */,
+				813DBC56B79E55CF268A0570 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5A9E72E64AEA73DC79B7A4AE /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		7881FD145BC3CD4CC103A32E /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		30149F3B8712F23CAB233B66 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A9E72E64AEA73DC79B7A4AE /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		740A872CAF7C917570E3FF24 /* NIOPosix */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7881FD145BC3CD4CC103A32E /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOPosix;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = AF37F0FEE9EBB6EA978A4FE2 /* Project object */;
+}

@@ -1,0 +1,4 @@
+module CGoLocationSpoofer [system] {
+    header "golocationspoofer.h"
+    export *
+}

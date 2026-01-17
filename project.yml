@@ -1,0 +1,143 @@
+name: location-spoofer
+options:
+  bundleIdPrefix: dev.duti.location-spoofer
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+packages:
+  SwiftNIO:
+    url: https://github.com/apple/swift-nio
+    from: "2.0.0"
+  swift-log:
+    url: https://github.com/apple/swift-log
+    from: "1.0.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "RL3VF87PQT"
+
+targets:
+  location-spoofer:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+        excludes:
+          - "**/.DS_Store"
+      - path: Resources
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.duti.location-spoofer
+        INFOPLIST_FILE: Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_ENTITLEMENTS: Resources/location-spoofer.entitlements
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "$(inherited)"
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+    dependencies:
+      - target: location-spoofer-tunnel
+        embed: true
+        codeSign: true
+
+  location-spoofer-tunnel:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Tunnel
+        excludes:
+          - "**/.DS_Store"
+      - path: GoSpoofer
+        excludes:
+          - "**/*.go"
+          - "**/*.sh"
+          - "build/**"
+          - "go.mod"
+          - "go.sum"
+          - "CGoLocationSpoofer.modulemap"
+      - path: GoSpoofer/build/libgolocationspoofer.a
+        buildPhase: none
+    
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.duti.location-spoofer.tunnel
+        INFOPLIST_FILE: Tunnel/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Tunnel/location-spoofer-tunnel.entitlements
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@executable_path/../../Frameworks"
+        SKIP_INSTALL: "YES"
+        HEADER_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/GoSpoofer"
+        SWIFT_OBJC_BRIDGING_HEADER: "Tunnel/location-spoofer-tunnel-Bridging-Header.h"
+        OTHER_LDFLAGS:
+          - "$(inherited)"
+          - "-lgolocationspoofer"
+        LIBRARY_SEARCH_PATHS:
+          - "$(PROJECT_DIR)/GoSpoofer/build"
+    dependencies:
+      - package: SwiftNIO
+        product: NIOPosix
+      - package: swift-log
+        product: Logging
+      - sdk: NetworkExtension.framework
+
+schemes:
+  location-spoofer:
+    build:
+      targets:
+        location-spoofer: all
+        location-spoofer-tunnel: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  location-spoofer-debug:
+    build:
+      targets:
+        location-spoofer: all
+        location-spoofer-tunnel: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-FIRDebugEnabled": true
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  location-spoofer-tunnel:
+    build:
+      targets:
+        location-spoofer-tunnel: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-NEDebugTunnel": true
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

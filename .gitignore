@@ -1,0 +1,74 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+xcuserdata/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.log
+.svn/
+
+# XcodeGen
+.xcodegen/
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# Go
+bin/
+pkg/
+*.test
+*.out
+vendor/
+go.work
+
+# GoSpoofer built artifacts
+GoSpoofer/build/
+GoSpoofer/*.a
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+*.pem
+*.key
+
+# Code signing
+*.mobileprovision
+*.certSigningRequest
+
+# Temporary files
+tmp/
+temp/
