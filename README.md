@@ -8,12 +8,31 @@ I did some research a few years back on how IOS location services worked: <https
 
 TL;DR: iPhone scans for WIFI access points, sends the list of access points to Apple, Apple tells device where those points are, iPhone triangulates. What you can do here is have a VPN that does a Man in the Middle attack and rewrite the response with different values for where the access points are. The device then thinks that is where it is.
 
+> MITM and processing are all done on device. No network connections are made by the app. It is safe to use...
+
 ## Building this yourself
 
 - Go to `./GoSpoofer/` and run `make.sh`
 - Open `./location-spoofer.xcodeproj/` with XCode
 - Select a paid developer account (Required. PacketTunnel is a paid API)
 - Run on iPhone?
+
+## Usage
+
+1. Open app
+2. Go to "Location"
+3. Enter a GPS coordinate or choose a preset
+4. Go to VPN
+5. Install profile
+6. Connect to VPN
+7. Go to Safari
+8. Go to <http://mitm.it>
+9. Download profile
+10. Go to settings
+11. Enable profile
+12. Go to General > About > Certificate Trust Settings and enable Location Spoofer CA
+13. Turn off and on location services
+14. Go to maps and see it working
 
 ## Some annoying notes encountered along the way
 
