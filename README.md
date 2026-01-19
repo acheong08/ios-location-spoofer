@@ -1,5 +1,8 @@
 # IOS Location Spoofer
 
+> [!NOTE]
+> Update 2026-01-19: Apple has rejected this app from testflight. You must have an Apple developer account to sideload onto your own device.
+
 https://github.com/user-attachments/assets/456d508c-2104-4d10-9458-e58e84b74788
 
 ## How it works
