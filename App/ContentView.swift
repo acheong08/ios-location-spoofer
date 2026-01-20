@@ -194,13 +194,25 @@ extension ContentView {
 
         let manager = makeManager()
         manager.saveToPreferences { error in
-            DispatchQueue.main.async {
-                self.isConnecting = false
-
-                if let error = error {
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.isConnecting = false
                     self.installationError = "Failed to install VPN profile: \(error.localizedDescription)"
                     self.showingInstallationAlert = true
-                } else {
+                }
+                return
+            }
+            
+            // Workaround for Apple bug: must call loadFromPreferences after saveToPreferences
+            // See https://forums.developer.apple.com/thread/25928
+            manager.loadFromPreferences { loadError in
+                DispatchQueue.main.async {
+                    self.isConnecting = false
+                    
+                    if let loadError = loadError {
+                        os_log("Warning: Failed to reload VPN preferences after install: %@", log: OSLog.default, type: .error, loadError.localizedDescription)
+                    }
+                    
                     os_log("VPN profile installed successfully", log: OSLog.default, type: .info)
                     self.loadVPNConfiguration()
                 }
@@ -244,10 +256,36 @@ extension ContentView {
                 case .connected, .connecting:
                     manager.connection.stopVPNTunnel()
                 case .disconnected, .disconnecting, .invalid:
-                    do {
-                        try manager.connection.startVPNTunnel()
-                    } catch {
-                        self.isConnecting = false
+                    // Ensure our VPN is enabled before saving. When another VPN (like WireGuard)
+                    // is active, iOS may have disabled our configuration. Setting isEnabled = true
+                    // and saving makes this the selected/active VPN configuration.
+                    manager.isEnabled = true
+                    manager.saveToPreferences { saveError in
+                        if let saveError = saveError {
+                            os_log("Failed to save VPN preferences: %@", log: OSLog.default, type: .error, saveError.localizedDescription)
+                            DispatchQueue.main.async {
+                                self.isConnecting = false
+                            }
+                            return
+                        }
+                        
+                        // Reload from preferences after saving (workaround for Apple bug)
+                        manager.loadFromPreferences { loadError in
+                            DispatchQueue.main.async {
+                                if let loadError = loadError {
+                                    os_log("Failed to load VPN preferences: %@", log: OSLog.default, type: .error, loadError.localizedDescription)
+                                    self.isConnecting = false
+                                    return
+                                }
+                                
+                                do {
+                                    try manager.connection.startVPNTunnel()
+                                } catch {
+                                    os_log("Failed to start VPN tunnel: %@", log: OSLog.default, type: .error, error.localizedDescription)
+                                    self.isConnecting = false
+                                }
+                            }
+                        }
                     }
                 @unknown default:
                     self.isConnecting = false
