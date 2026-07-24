@@ -47,10 +47,10 @@ struct ContentView: View {
             let manager = managers?.first ?? NETunnelProviderManager()
 
             let proto = NETunnelProviderProtocol()
-            proto.providerBundleIdentifier = "com.whitemirror.location-spoofer.tunnel"
+            proto.providerBundleIdentifier = "dev.duti.location-spoofer.tunnel"
             proto.serverAddress = "127.0.0.1"
             manager.protocolConfiguration = proto
-            manager.localizedDescription = "任意门"
+            manager.localizedDescription = "Location Spoofer"
             manager.isEnabled = true
 
             manager.saveToPreferences { error in

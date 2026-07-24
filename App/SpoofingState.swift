@@ -16,13 +16,13 @@ enum SpoofingState: Equatable {
     var primaryText: String {
         switch self {
         case .off:
-            return "未开启"
+            return "Off"
         case .pending(_, let isClosing):
-            return isClosing ? "正在关闭..." : "正在生效中"
+            return isClosing ? "Disabling…" : "Activating…"
         case .on(let name):
-            return "已开启:\(name)"
+            return "Active: \(name)"
         case .failed(let reason):
-            return "开启失败:\(reason)"
+            return "Failed: \(reason)"
         }
     }
 
@@ -32,7 +32,7 @@ enum SpoofingState: Equatable {
         case .off, .on, .failed:
             return nil
         case .pending:
-            return "请重启定位服务"
+            return "Please restart Location Services"
         }
     }
 
@@ -51,8 +51,8 @@ enum SpoofingState: Equatable {
         switch self {
         case .off:      return nil   // off 时主操作藏在底部"设为虚拟定位"
         case .pending:  return nil   // pending 时按钮在重启教学页里
-        case .on:       return "关闭"
-        case .failed:   return "重试"
+        case .on:       return "Disable"
+        case .failed:   return "Retry"
         }
     }
 }

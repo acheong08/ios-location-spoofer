@@ -218,12 +218,12 @@ func setupCertServing(proxy *goproxy.ProxyHttpServer, cert *tls.Certificate) {
 	// rendoor.cert/ 收到的请求先返回这个等待页,2 秒后 meta refresh 跳 /cert 真证书。
 	// 给用户视觉反馈"事情在动",避免 Safari 空白几百毫秒后突然弹下载框的突兀感。
 	const waitPageHTML = `<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta http-equiv="refresh" content="2;url=/cert">
-<title>正在准备配置文件</title>
+<title>Preparing configuration profile</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,system-ui;background:#fff;color:#222;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;text-align:center}
 .title{font-size:24px;font-weight:600;margin-bottom:16px}
@@ -233,9 +233,9 @@ a{color:#007AFF;text-decoration:none}
 </style>
 </head>
 <body>
-<div class="title">正在准备配置文件...</div>
-<div class="subtitle">请稍候,系统将自动弹出安装提示。<br>期间请勿关闭此页面。</div>
-<div class="fallback">如果没有自动弹出,<a href="/cert">点击这里手动下载</a></div>
+<div class="title">Preparing configuration profile…</div>
+<div class="subtitle">Please wait, the system will show an install prompt shortly.<br>Do not close this page.</div>
+<div class="fallback">If the prompt does not appear, <a href="/cert">tap here to download manually</a></div>
 </body>
 </html>`
 
@@ -278,42 +278,42 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 		}
 	}()
 
-	logEvent(fmt.Sprintf("收到定位请求 Host=%s Path=%s Method=%s", req.Host, req.URL.Path, req.Method))
+	logEvent(fmt.Sprintf("Location request received Host=%s Path=%s Method=%s", req.Host, req.URL.Path, req.Method))
 
 	body, err := io.ReadAll(req.Body)
 	req.Body.Close()
 	if err != nil {
 		log.Printf("Failed to read request body: %v", err)
-		logEvent(fmt.Sprintf("读请求体失败: %v,return req,nil 透传", err))
+		logEvent(fmt.Sprintf("Failed to read request body: %v, passing through", err))
 		return req, nil
 	}
-	logEvent(fmt.Sprintf("已读请求体 length=%d bytes", len(body)))
+	logEvent(fmt.Sprintf("Request body read length=%d bytes", len(body)))
 
 	arpc := ArpcDeserialize(body)
 	if arpc == nil {
-		logEvent("ArpcDeserialize 返回 nil(可能 gzip/版本不兼容),return req,nil 透传")
+		logEvent("ArpcDeserialize returned nil (possibly gzip/version mismatch), passing through")
 		return req, nil
 	}
-	logEvent(fmt.Sprintf("ARPC 解析成功 version=%s payloadLen=%d", arpc.Version, len(arpc.Payload)))
+	logEvent(fmt.Sprintf("ARPC parsed OK version=%s payloadLen=%d", arpc.Version, len(arpc.Payload)))
 
 	// 仅用 proto.Unmarshal 做解析验证 + 统计 wifiCount,不再用于改写。
 	wloc := &pb.AppleWLoc{}
 	if err := proto.Unmarshal(arpc.Payload, wloc); err != nil {
 		log.Printf("Failed to unmarshal protobuf: %v", err)
-		logEvent(fmt.Sprintf("protobuf Unmarshal 失败: %v,return req,nil 透传", err))
+		logEvent(fmt.Sprintf("protobuf Unmarshal failed: %v, passing through", err))
 		return req, nil
 	}
 
 	wifiCount := len(wloc.WifiDevices)
 	log.Printf("Spoofing location for %d WiFi devices", wifiCount)
-	logEvent(fmt.Sprintf("已解析 AppleWLoc wifiCount=%d", wifiCount))
+	logEvent(fmt.Sprintf("AppleWLoc parsed wifiCount=%d", wifiCount))
 
 	// raw wire 递归 splice:只动 Location.Latitude(tag 1 varint)/Longitude(tag 2 varint)的字节,
 	// 其他所有字段(HorizontalAccuracy/Altitude/未知 tag/NumCellResults/DeviceType 等)wire 字节级保留。
 	lat := IntFromCoord(spoofLat)
 	lon := IntFromCoord(spoofLon)
 	newPayload, modifiedFields := rewriteAppleWLocCoords(arpc.Payload, lat, lon)
-	logEvent(fmt.Sprintf("raw wire 改写完成 入站 payload=%d B 出站 payload=%d B 修改 %d 处 lat/lon (spoof=(%.6f, %.6f))", len(arpc.Payload), len(newPayload), modifiedFields, spoofLat, spoofLon))
+	logEvent(fmt.Sprintf("raw wire rewrite done in=%d B out=%d B modified %d lat/lon fields (spoof=(%.6f, %.6f))", len(arpc.Payload), len(newPayload), modifiedFields, spoofLat, spoofLon))
 
 	// 手工构造 ARPC 响应:magic 8B + 大端 2B 长度 + payload
 	initialBytes, _ := hex.DecodeString("0001000000010000")
@@ -334,7 +334,7 @@ func handleLocationRequest(req *http.Request) (*http.Request, *http.Response) {
 		ContentLength: int64(len(responseBytes)),
 	}
 	resp.Header.Set("Content-Type", "application/octet-stream")
-	logEvent(fmt.Sprintf("回响应 200 OK respLen=%d wifiCount=%d", len(responseBytes), wifiCount))
+	logEvent(fmt.Sprintf("Response sent 200 OK respLen=%d wifiCount=%d", len(responseBytes), wifiCount))
 	return req, resp
 }
 

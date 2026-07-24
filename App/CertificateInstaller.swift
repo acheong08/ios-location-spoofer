@@ -10,7 +10,7 @@ enum CertificateInstaller {
     /// 返回 true 表示成功唤起 Safari
     static func installCertificate(completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: certURL) else {
-            completion(false, "URL 构造失败")
+            completion(false, "Failed to construct URL")
             return
         }
 
@@ -19,7 +19,7 @@ enum CertificateInstaller {
                 if success {
                     completion(true, nil)
                 } else {
-                    completion(false, "无法打开 Safari,请检查 VPN 连接")
+                    completion(false, "Unable to open Safari. Please check VPN connection.")
                 }
             }
         }

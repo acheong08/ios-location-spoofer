@@ -121,7 +121,7 @@ jobs:
           API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
           mkdir -p $HOME/private_keys
-          echo -n "$API_KEY_P8" | base64 --decode -o $HOME/private_keys/AuthKey_N68G775GA2.p8
+          echo -n "$API_KEY_P8" | base64 --decode -o $HOME/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
 
       - name: Build archive
         run: |
@@ -131,11 +131,11 @@ jobs:
             -archivePath $RUNNER_TEMP/LocationSpoofer.xcarchive \
             -destination "generic/platform=iOS" \
             CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM=3MPFZ2L92C \
+            DEVELOPMENT_TEAM=RL3VF87PQT \
             -allowProvisioningUpdates \
-            -authenticationKeyPath $HOME/private_keys/AuthKey_N68G775GA2.p8 \
-            -authenticationKeyID N68G775GA2 \
-            -authenticationKeyIssuerID 9aaa8cda-ed99-4624-b2aa-3b4c8b9e3245 \
+            -authenticationKeyPath $HOME/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APP_STORE_CONNECT_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }} \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             APP_PROVISIONING_PROFILE="LocationSpoofer AppStore" \
             TUNNEL_PROVISIONING_PROFILE="LocationSpoofer Tunnel AppStore" \
@@ -151,14 +151,14 @@ jobs:
             <key>method</key>
             <string>app-store-connect</string>
             <key>teamID</key>
-            <string>3MPFZ2L92C</string>
+            <string>RL3VF87PQT</string>
             <key>signingStyle</key>
             <string>manual</string>
             <key>provisioningProfiles</key>
             <dict>
-              <key>com.whitemirror.location-spoofer</key>
+              <key>dev.duti.location-spoofer</key>
               <string>LocationSpoofer AppStore</string>
-              <key>com.whitemirror.location-spoofer.tunnel</key>
+              <key>dev.duti.location-spoofer.tunnel</key>
               <string>LocationSpoofer Tunnel AppStore</string>
             </dict>
             <key>uploadSymbols</key>
@@ -170,14 +170,14 @@ jobs:
             -archivePath $RUNNER_TEMP/LocationSpoofer.xcarchive \
             -exportOptionsPlist $RUNNER_TEMP/export.plist \
             -exportPath $RUNNER_TEMP/export \
-            -authenticationKeyPath $HOME/private_keys/AuthKey_N68G775GA2.p8 \
-            -authenticationKeyID N68G775GA2 \
-            -authenticationKeyIssuerID 9aaa8cda-ed99-4624-b2aa-3b4c8b9e3245
+            -authenticationKeyPath $HOME/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APP_STORE_CONNECT_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
 
       - name: Upload to TestFlight
         env:
-          API_KEY_ID: N68G775GA2
-          API_ISSUER_ID: 9aaa8cda-ed99-4624-b2aa-3b4c8b9e3245
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           xcrun altool --upload-app \
             -f $RUNNER_TEMP/export/*.ipa \

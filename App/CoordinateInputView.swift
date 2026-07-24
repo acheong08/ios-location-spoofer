@@ -41,7 +41,7 @@ struct CoordinateInputView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
-                        TextField("搜索地名，如：杭州西湖", text: $searchText)
+                        TextField("Search a place, e.g. Times Square", text: $searchText)
                             .onSubmit { searchLocation() }
                         if !searchText.isEmpty {
                             Button(action: { searchText = "" }) {
@@ -57,7 +57,7 @@ struct CoordinateInputView: View {
                     MapReader { proxy in
                         Map(position: .constant(.region(region))) {
                             if let pin = pin {
-                                Marker("目标位置", coordinate: pin)
+                                Marker("Target Location", coordinate: pin)
                                     .tint(.red)
                             }
                         }
@@ -75,7 +75,7 @@ struct CoordinateInputView: View {
                             HStack {
                                 Image(systemName: "location.fill")
                                     .foregroundColor(.green)
-                                Text("当前定位：\(name)")
+                                Text("Current location: \(name)")
                                     .font(.body)
                                     .fontWeight(.medium)
                                 Spacer()
@@ -84,7 +84,7 @@ struct CoordinateInputView: View {
                             HStack {
                                 Image(systemName: "location.slash")
                                     .foregroundColor(.secondary)
-                                Text("尚未设置定位")
+                                Text("No location set")
                                     .font(.body)
                                     .foregroundColor(.secondary)
                                 Spacer()
@@ -97,7 +97,7 @@ struct CoordinateInputView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("收藏地点")
+                            Text("Favorites")
                                 .font(.headline)
                             Spacer()
                             Button(action: { showingAddFavorite = true }) {
@@ -106,7 +106,7 @@ struct CoordinateInputView: View {
                             }
                         }
                         if savedLocations.isEmpty {
-                            Text("暂无收藏，点击 + 添加常用地点")
+                            Text("No favorites yet. Tap + to add a location.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.vertical, 4)
@@ -135,7 +135,7 @@ struct CoordinateInputView: View {
                                         Button(role: .destructive) {
                                             deleteFavorite(loc)
                                         } label: {
-                                            Label("删除", systemImage: "trash")
+                                            Label("Delete", systemImage: "trash")
                                         }
                                     }
                                 }
@@ -148,30 +148,30 @@ struct CoordinateInputView: View {
                 }
                 .padding()
             }
-            .navigationTitle("位置设置")
+            .navigationTitle("Location")
             .navigationBarTitleDisplayMode(.inline)
-            .alert("确认设置定位", isPresented: $showingConfirm) {
-                Button("确定") { confirmLocation() }
-                Button("取消", role: .cancel) { }
+            .alert("Confirm Location", isPresented: $showingConfirm) {
+                Button("Confirm") { confirmLocation() }
+                Button("Cancel", role: .cancel) { }
             } message: {
-                Text("将定位设置为：\(selectedName)")
+                Text("Set location to: \(selectedName)")
             }
-            .alert("添加收藏", isPresented: $showingAddFavorite) {
-                TextField("地点名称", text: $favoriteName)
-                Button("保存") { addCurrentAsFavorite() }
-                Button("取消", role: .cancel) { favoriteName = "" }
+            .alert("Add Favorite", isPresented: $showingAddFavorite) {
+                TextField("Location name", text: $favoriteName)
+                Button("Save") { addCurrentAsFavorite() }
+                Button("Cancel", role: .cancel) { favoriteName = "" }
             } message: {
-                Text("为当前选中的位置命名")
+                Text("Name this location")
             }
-            .alert("保存错误", isPresented: $showingSaveAlert) {
-                Button("确定") {}
+            .alert("Save Error", isPresented: $showingSaveAlert) {
+                Button("OK") {}
             } message: {
-                Text(saveError ?? "保存坐标失败")
+                Text(saveError ?? "Failed to save coordinates")
             }
-            .alert("目标位置已设置", isPresented: $showLocationSetAlert) {
-                Button("确定") { }
+            .alert("Location Set", isPresented: $showLocationSetAlert) {
+                Button("OK") { }
             } message: {
-                Text("已将定位设置为：\(selectedName)。请回到「主页」按引导重启 VPN，使新定位生效。")
+                Text("Location set to: \(selectedName). Return to the home screen and follow the prompt to restart VPN for the new location to take effect.")
             }
             .onAppear {
                 loadSavedLocations()

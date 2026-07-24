@@ -133,7 +133,7 @@ struct MapHomeView: View {
             MapReader { proxy in
                 Map(position: $cameraPosition, selection: $mapSelection) {
                     if let coord = selectedCoordinate {
-                        Marker("目标位置", coordinate: coord)
+                        Marker("Target Location", coordinate: coord)
                             .tint(.red)
                     }
                     UserAnnotation()
@@ -189,13 +189,13 @@ struct MapHomeView: View {
         .sheet(isPresented: $showRestartLocationGuide) {
             restartLocationGuide
         }
-        .alert("关闭虚拟定位", isPresented: $showDisableGuide) {
-            Button("取消", role: .cancel) { }
-            Button("关闭", role: .destructive) {
+        .alert("Disable Spoofing", isPresented: $showDisableGuide) {
+            Button("Cancel", role: .cancel) { }
+            Button("Disable", role: .destructive) {
                 disableSpoofing()
             }
         } message: {
-            Text("将关闭虚拟定位。关闭后请重启一次定位服务,真实定位才会恢复。")
+            Text("Spoofing will be disabled. After disabling, restart Location Services once for your real location to return.")
         }
         .sheet(isPresented: $showRestartPhoneGuide) {
             disableRestartGuide
@@ -309,7 +309,7 @@ struct MapHomeView: View {
 
             if case .on = spoofingState {
                 Button(action: { showDisableGuide = true }) {
-                    Text("关闭定位")
+                    Text("Disable")
                         .font(.body)
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
@@ -320,7 +320,7 @@ struct MapHomeView: View {
                 }
             } else if case .failed = spoofingState {
                 Button(action: { spoofingState = .off }) {
-                    Text("重试")
+                    Text("Retry")
                         .font(.body)
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
@@ -337,15 +337,15 @@ struct MapHomeView: View {
     // 状态文案(MapHomeView 内重写,不动 SpoofingState.swift)
     private var statusPrimaryText: String {
         switch spoofingState {
-        case .off: return "选择位置开始虚拟定位"
-        case .pending(_, let isClosing): return isClosing ? "正在关闭..." : "正在生效中..."
-        case .on(let name): return "已开启:\(name)"
-        case .failed(let reason): return "失败:\(reason)"
+        case .off: return "Select a location to start spoofing"
+        case .pending(_, let isClosing): return isClosing ? "Disabling…" : "Activating…"
+        case .on(let name): return "Active: \(name)"
+        case .failed(let reason): return "Failed: \(reason)"
         }
     }
 
     private var statusSubText: String? {
-        if case .pending = spoofingState { return "请重启定位服务" }
+        if case .pending = spoofingState { return "Please restart Location Services" }
         return nil
     }
     private var indicatorColor: Color {
@@ -363,7 +363,7 @@ struct MapHomeView: View {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
-                TextField("搜索地点或点击地图选择", text: $searchText)
+                TextField("Search a place or tap the map", text: $searchText)
                     .textFieldStyle(.plain)
                     .submitLabel(.search)
                     .onSubmit { performSearch() }
@@ -408,7 +408,7 @@ struct MapHomeView: View {
                     .foregroundColor(.red)
                     .font(.title2)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(selectedLocationName ?? "未知位置")
+                    Text(selectedLocationName ?? "Unknown location")
                         .font(.headline)
                     if let coord = selectedCoordinate {
                         Text(String(format: "%.4f, %.4f", coord.latitude, coord.longitude))
@@ -425,7 +425,7 @@ struct MapHomeView: View {
                 Button(action: { addCurrentSelectionToFavorites() }) {
                     HStack {
                         Image(systemName: justFavorited ? "checkmark.circle.fill" : "star")
-                        Text(justFavorited ? "已收藏" : "收藏")
+                        Text(justFavorited ? "Saved" : "Save")
                             .fontWeight(justFavorited ? .semibold : .regular)
                     }
                     .frame(maxWidth: .infinity)
@@ -437,7 +437,7 @@ struct MapHomeView: View {
                 }
                 .disabled(justFavorited)
                 Button(action: { setAsLocation() }) {
-                    Text(isSpoofing ? "正在生效中..." : "设为定位")
+                    Text(isSpoofing ? "Activating…" : "Set Location")
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -453,25 +453,25 @@ struct MapHomeView: View {
 
     private var restartLocationGuide: some View {
         VStack(spacing: 20) {
-            Text("最后一步")
+            Text("Final step")
                 .font(.title2).fontWeight(.bold)
-            Text("请关闭再打开定位服务")
+            Text("Turn Location Services off and back on")
                 .font(.title3)
             VStack(alignment: .leading, spacing: 12) {
-                Text("① 打开 iPhone「设置」").font(.body)
-                Text("② 点击「隐私与安全性」").font(.body)
-                Text("③ 点击「定位服务」").font(.body)
-                Text("④ 关闭「定位服务」开关").font(.body)
-                Text("⑤ 等待 3 秒").font(.body).foregroundColor(.red)
-                Text("⑥ 重新打开「定位服务」开关").font(.body)
+                Text("① Open iPhone Settings").font(.body)
+                Text("② Tap Privacy & Security").font(.body)
+                Text("③ Tap Location Services").font(.body)
+                Text("④ Turn off Location Services").font(.body)
+                Text("⑤ Wait 3 seconds").font(.body).foregroundColor(.red)
+                Text("⑥ Turn Location Services back on").font(.body)
             }
             .padding()
             Spacer()
-            Button("我已完成") {
+            Button("Done") {
                 showRestartLocationGuide = false
                 // pending → on
                 let name = UserDefaults.standard.string(forKey: "currentLocationName") ?? ""
-                DiagLog.add("用户点【我已完成】:name=\(name),状态置 on,即将关 VPN")
+                DiagLog.add("User tapped [Done]: name=\(name), state→on, will stop VPN")
                 if !name.isEmpty {
                     spoofingState = .on(name: name)
                     // 镜头移到伪装位置,用户直观看到"已生效"
@@ -501,24 +501,24 @@ struct MapHomeView: View {
 
     private var disableRestartGuide: some View {
         VStack(spacing: 20) {
-            Text("已关闭虚拟定位")
+            Text("Spoofing disabled")
                 .font(.title2).fontWeight(.bold)
-            Text("最后一步:重启定位服务,真实定位才会恢复")
+            Text("Final step: restart Location Services for your real location to return")
                 .font(.title3)
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 12) {
-                Text("请按以下步骤操作:")
+                Text("Follow these steps:")
                     .font(.body)
-                Text("① 打开 iPhone「设置」").font(.body)
-                Text("② 点击「隐私与安全性」").font(.body)
-                Text("③ 点击「定位服务」").font(.body)
-                Text("④ 关闭「定位服务」开关").font(.body)
-                Text("⑤ 等待 3 秒").font(.body).foregroundColor(.red)
-                Text("⑥ 重新打开「定位服务」开关").font(.body)
+                Text("① Open iPhone Settings").font(.body)
+                Text("② Tap Privacy & Security").font(.body)
+                Text("③ Tap Location Services").font(.body)
+                Text("④ Turn off Location Services").font(.body)
+                Text("⑤ Wait 3 seconds").font(.body).foregroundColor(.red)
+                Text("⑥ Turn Location Services back on").font(.body)
             }
             .padding()
             Spacer()
-            Button("我已完成") {
+            Button("Done") {
                 showRestartPhoneGuide = false
                 spoofingState = .off
             }
@@ -537,7 +537,7 @@ struct MapHomeView: View {
             List {
                 // 最近使用
                 if !recentLocations.isEmpty {
-                    Section("最近使用") {
+                    Section("Recent") {
                         ForEach(recentLocations) { saved in
                             Button(action: { selectFavorite(saved) }) {
                                 favoriteRow(saved: saved, iconName: "clock", iconColor: .orange)
@@ -547,9 +547,9 @@ struct MapHomeView: View {
                 }
 
                 // 我的收藏
-                Section("我的收藏") {
+                Section("Favorites") {
                     if savedLocations.isEmpty {
-                        Text("还没有收藏的位置")
+                        Text("No saved locations yet")
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(savedLocations) { saved in
@@ -560,18 +560,18 @@ struct MapHomeView: View {
                                 Button(role: .destructive) {
                                     deleteFavorite(saved)
                                 } label: {
-                                    Label("删除", systemImage: "trash")
+                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("收藏的位置")
+            .navigationTitle("Saved Locations")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("完成") { showFavoritesSheet = false }
+                    Button("Done") { showFavoritesSheet = false }
                 }
             }
         }
@@ -608,7 +608,7 @@ struct MapHomeView: View {
                     .compactMap { $0 }
                     .joined(separator: ", ")
                 DispatchQueue.main.async {
-                    self.selectedLocationName = name.isEmpty ? "未知位置" : name
+                    self.selectedLocationName = name.isEmpty ? "Unknown location" : name
                 }
             }
         }
@@ -632,7 +632,7 @@ struct MapHomeView: View {
             } catch {
                 // 兜底:直接用 feature 自带字段
                 applySelectedLocation(
-                    name: feature.title ?? "未知地点",
+                    name: feature.title ?? "Unknown place",
                     coordinate: feature.coordinate
                 )
             }
@@ -641,7 +641,7 @@ struct MapHomeView: View {
 
     private func applyMapItem(_ mapItem: MKMapItem) {
         applySelectedLocation(
-            name: mapItem.name ?? "未知地点",
+            name: mapItem.name ?? "Unknown place",
             coordinate: mapItem.placemark.coordinate
         )
     }
@@ -706,9 +706,9 @@ struct MapHomeView: View {
 
     private func setAsLocation() {
         guard let coord = selectedCoordinate else { return }
-        let name = selectedLocationName ?? "未知位置"
+        let name = selectedLocationName ?? "Unknown location"
         spoofedDisplayCoord = coord  // GCJ-02 显示坐标,用户点"我已完成"后地图移到这里
-        DiagLog.add("设为定位入口:坐标=(\(coord.latitude), \(coord.longitude)) 名称=\(name) vpnConnected=\(vpnConnected) → 走\(vpnConnected ? "热切重启" : "冷启动")分支")
+        DiagLog.add("Set Location entry: coord=(\(coord.latitude), \(coord.longitude)) name=\(name) vpnConnected=\(vpnConnected) → \(vpnConnected ? "hot-restart" : "cold-start") branch")
 
         // 进入 pending 状态(尚未生效)
         spoofingState = .pending(name: name, isClosing: false)
@@ -719,7 +719,7 @@ struct MapHomeView: View {
         LocationConfiguration.shared.setCoordinates(latitude: converted.latitude, longitude: converted.longitude)
         UserDefaults.standard.set(name, forKey: "currentLocationName")
         currentLocationName = name
-        DiagLog.add("已写入坐标(WGS-84)到 LocationConfiguration + UserDefaults")
+        DiagLog.add("Coordinates written (WGS-84) to LocationConfiguration + UserDefaults")
 
         // 收藏/最近存原始 GCJ-02 坐标(用于显示和地图回显),设为定位时才在 setAsLocation 内转 WGS-84
         addToRecentLocations(name: name, latitude: coord.latitude, longitude: coord.longitude)
@@ -728,21 +728,21 @@ struct MapHomeView: View {
         if !vpnConnected {
             connectVPNForSpoofing(expectedLat: converted.latitude, expectedLon: converted.longitude) { success, errorMsg in
                 if success {
-                    DiagLog.add("[冷启动] connectVPNForSpoofing 回调 success → 关 sheet,1 秒后弹教学")
+                    DiagLog.add("[cold-start] connectVPNForSpoofing callback success → close sheet, show tutorial in 1s")
                     // VPN 连上后,弹出"重启定位服务"教学
                     DispatchQueue.main.async {
                         showLocationSheet = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             showRestartLocationGuide = true
-                            DiagLog.add("[冷启动] 已弹出重启定位服务教学")
+                            DiagLog.add("[cold-start] Restart Location Services tutorial shown")
                             isSpoofing = false
                         }
                     }
                 } else {
                     DispatchQueue.main.async {
-                        DiagLog.add("[冷启动] connectVPNForSpoofing 回调 failure:\(errorMsg ?? "未知错误")")
+                        DiagLog.add("[cold-start] connectVPNForSpoofing callback failure:\(errorMsg ?? "unknown error"))")
                         // 失败,显示具体原因
-                        spoofingState = .failed(reason: errorMsg ?? "未知错误")
+                        spoofingState = .failed(reason: errorMsg ?? "unknown error")
                         isSpoofing = false
                         showLocationSheet = false
                     }
@@ -789,7 +789,7 @@ struct MapHomeView: View {
     private func probeGoProxyReady(timeout: TimeInterval, completion: @escaping (Bool) -> Void) {
         let started = Date()
         let deadline = started.addingTimeInterval(timeout)
-        DiagLog.add("[探测] 开始探测 Go 代理 127.0.0.1:8888(总超时 \(Int(timeout)) 秒)")
+        DiagLog.add("[probe] Probing Go proxy 127.0.0.1:8888 (timeout \(Int(timeout))s)")
 
         var attemptCount = 0
         func attempt() {
@@ -805,7 +805,7 @@ struct MapHomeView: View {
                     }
                 } else {
                     let elapsed = Date().timeIntervalSince(started)
-                    DiagLog.add("[探测] 第 \(myAttempt) 次 attempt 后到总超时,Go 就绪探测放弃(总耗时约 \(String(format: "%.2f", elapsed))s)")
+                    DiagLog.add("[probe] Attempt \(myAttempt) timed out, Go readiness probe gave up (\(String(format: "%.2f", elapsed))s)")
                     completion(false)
                 }
             }
@@ -816,7 +816,7 @@ struct MapHomeView: View {
                 case .ready:
                     settled = true
                     let elapsed = Date().timeIntervalSince(started)
-                    DiagLog.add("[探测] 第 \(myAttempt) 次 attempt TCP .ready,Go 代理可用,总耗时约 \(String(format: "%.2f", elapsed))s")
+                    DiagLog.add("[probe] Attempt \(myAttempt) TCP .ready, Go proxy available (\(String(format: "%.2f", elapsed))s)")
                     conn.cancel()
                     completion(true)
                 case .failed, .cancelled:
@@ -833,7 +833,7 @@ struct MapHomeView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 guard !settled else { return }
                 settled = true
-                DiagLog.add("[探测] 第 \(myAttempt) 次 attempt 单次 1 秒超时,重试")
+                DiagLog.add("[probe] Attempt \(myAttempt) 1s timeout, retrying")
                 conn.cancel()
                 retryOrFail()
             }
@@ -847,7 +847,7 @@ struct MapHomeView: View {
     private func queryGoCoordsViaIPC(completion: @escaping ((lat: Double, lon: Double, enabled: Bool)?) -> Void) {
         guard let manager = ContentView.vpnManager,
               let session = manager.connection as? NETunnelProviderSession else {
-            DiagLog.add("[IPC] session 不可用(manager nil 或 connection 不是 NETunnelProviderSession)")
+            DiagLog.add("[IPC] session unavailable (manager nil or connection not NETunnelProviderSession)")
             completion(nil)
             return
         }
@@ -866,7 +866,7 @@ struct MapHomeView: View {
                 }
             }
         } catch {
-            DiagLog.add("[IPC] sendProviderMessage 抛错:\(error.localizedDescription)")
+            DiagLog.add("[IPC] sendProviderMessage error:\(error.localizedDescription)")
             completion(nil)
         }
     }
@@ -877,7 +877,7 @@ struct MapHomeView: View {
     private func confirmCoordsReady(expectedLat: Double, expectedLon: Double, timeout: TimeInterval, completion: @escaping (Bool) -> Void) {
         let started = Date()
         let deadline = started.addingTimeInterval(timeout)
-        DiagLog.add("[确认] 开始 expected=(\(String(format: "%.6f", expectedLat)), \(String(format: "%.6f", expectedLon))) 总超时 \(Int(timeout)) 秒")
+        DiagLog.add("[confirm] Starting expected=(\(String(format: "%.6f", expectedLat)), \(String(format: "%.6f", expectedLon))) timeout \(Int(timeout))s)")
 
         var attemptCount = 0
         func attempt() {
@@ -889,19 +889,19 @@ struct MapHomeView: View {
                     let dLon = abs(r.lon - expectedLon)
                     if dLat < 1e-5 && dLon < 1e-5 {
                         let elapsed = Date().timeIntervalSince(started)
-                        DiagLog.add("[确认] 第 \(myAttempt) 次匹配 Go=(\(String(format: "%.6f", r.lat)), \(String(format: "%.6f", r.lon))) enabled=\(r.enabled),总耗时约 \(String(format: "%.2f", elapsed))s")
+                        DiagLog.add("[confirm] Attempt \(myAttempt) matched Go=(\(String(format: "%.6f", r.lat)), \(String(format: "%.6f", r.lon))) enabled=\(r.enabled) (\(String(format: "%.2f", elapsed))s)")
                         completion(true)
                         return
                     }
-                    DiagLog.add("[确认] 第 \(myAttempt) 次不匹配 Go=(\(String(format: "%.6f", r.lat)), \(String(format: "%.6f", r.lon))) dLat=\(String(format: "%.6f", dLat)) dLon=\(String(format: "%.6f", dLon)),0.3 秒后重试")
+                    DiagLog.add("[confirm] Attempt \(myAttempt) mismatch Go=(\(String(format: "%.6f", r.lat)), \(String(format: "%.6f", r.lon))) dLat=\(String(format: "%.6f", dLat)) dLon=\(String(format: "%.6f", dLon)), retry in 0.3s")
                 } else {
-                    DiagLog.add("[确认] 第 \(myAttempt) 次 IPC 失败,0.3 秒后重试")
+                    DiagLog.add("[confirm] Attempt \(myAttempt) IPC failed, retry in 0.3s")
                 }
                 if Date() < deadline {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { attempt() }
                 } else {
                     let elapsed = Date().timeIntervalSince(started)
-                    DiagLog.add("[确认] 第 \(myAttempt) 次后到总超时,坐标确认放弃(总耗时约 \(String(format: "%.2f", elapsed))s)")
+                    DiagLog.add("[confirm] Attempt \(myAttempt) timed out, coord confirmation gave up (\(String(format: "%.2f", elapsed))s))")
                     completion(false)
                 }
             }
@@ -914,16 +914,16 @@ struct MapHomeView: View {
     /// 关键:NE status == .connected 不代表 Go 代理 127.0.0.1:8888 已 ListenAndServe,
     /// 所以 .connected 后再延迟 2 秒,确保用户重启定位服务时代理已经能接请求。
     private func connectVPNForSpoofing(expectedLat: Double, expectedLon: Double, completion: @escaping (Bool, String?) -> Void) {
-        DiagLog.add("[冷启动] 进入 connectVPNForSpoofing")
-        DiagLog.add("[冷启动] 准备 VPN 配置(installAndStartVPN:重启用→保存→重新加载→绑定)")
+        DiagLog.add("[cold-start] Entering connectVPNForSpoofing")
+        DiagLog.add("[cold-start] Preparing VPN config (installAndStartVPN: restart→save→reload→bind)")
 
         ContentView.installAndStartVPN { result in
             switch result {
             case .failure(let error):
-                DiagLog.add("[冷启动] 失败:VPN 配置准备失败 \(error.localizedDescription)")
-                completion(false, "VPN 配置准备失败:\(error.localizedDescription)")
+                DiagLog.add("[cold-start] Failed: VPN config prep failed \(error.localizedDescription)")
+                completion(false, "VPN config prep failed: \(error.localizedDescription)")
             case .success(let manager):
-                DiagLog.add("[冷启动] VPN 配置已就绪并启用,准备 startVPNTunnel")
+                DiagLog.add("[cold-start] VPN config ready and enabled, preparing startVPNTunnel")
 
                 let state = RestartState()
 
@@ -934,27 +934,27 @@ struct MapHomeView: View {
                         NotificationCenter.default.removeObserver(observer)
                     }
                     if ok {
-                        DiagLog.add("[冷启动] VPN 已连接,启动 Go 代理就绪探测(总超时 10 秒)")
+                        DiagLog.add("[cold-start] VPN connected, starting Go proxy readiness probe (timeout 10s)")
                         probeGoProxyReady(timeout: 10) { ready in
                             if ready {
-                                DiagLog.add("[冷启动] Go TCP 就绪,启动坐标确认(总超时 15 秒)")
+                                DiagLog.add("[cold-start] Go TCP ready, starting coord confirmation (timeout 15s)")
                                 confirmCoordsReady(expectedLat: expectedLat, expectedLon: expectedLon, timeout: 15) { matched in
                                     if matched {
-                                        DiagLog.add("[冷启动] 坐标已确认,回调 completion(true)")
+                                        DiagLog.add("[cold-start] Coords confirmed, callback completion(true)")
                                         completion(true, nil)
                                     } else {
-                                        DiagLog.add("[冷启动] 坐标确认超时,回调 completion(false)")
-                                        completion(false, "Go 代理已就绪但坐标确认超时,请重试")
+                                        DiagLog.add("[cold-start] Coord confirmation timed out, callback completion(false)")
+                                        completion(false, "Go proxy ready but coord confirmation timed out, please retry")
                                     }
                                 }
                             } else {
-                                DiagLog.add("[冷启动] Go TCP 就绪探测超时,回调 completion(false)")
-                                completion(false, "Go 代理就绪超时,请重试")
+                                DiagLog.add("[cold-start] Go TCP readiness probe timed out, callback completion(false)")
+                                completion(false, "Go proxy readiness timed out, please retry")
                             }
                         }
                     } else {
-                        DiagLog.add("[冷启动] finish 失败:\(errMsg ?? "VPN 启动失败")")
-                        completion(false, errMsg ?? "VPN 启动失败")
+                        DiagLog.add("[cold-start] finish failed:\(errMsg ?? "VPN start failed")
+                        completion(false, errMsg ?? "VPN start failed")
                     }
                 }
 
@@ -966,12 +966,12 @@ struct MapHomeView: View {
                     guard !state.finished else { return }
                     guard let conn = notification.object as? NEVPNConnection,
                           conn === manager.connection else { return }
-                    DiagLog.add("[冷启动] 观察者收到状态变化: \(manager.connection.status.diagDesc)")
+                    DiagLog.add("[cold-start] Observer received status change: \(manager.connection.status.diagDesc)")
                     switch manager.connection.status {
                     case .connected:
                         finish(true, nil)
                     case .invalid:
-                        finish(false, "VPN 配置失效,请重试")
+                        finish(false, "VPN config invalid, please retry")
                     default:
                         break  // 忽略 .connecting / .disconnecting / .disconnected / .reasserting 中间态
                     }
@@ -985,15 +985,15 @@ struct MapHomeView: View {
 
                 do {
                     try manager.connection.startVPNTunnel()
-                    DiagLog.add("[冷启动] 已调 startVPNTunnel,等待 .connected 事件")
+                    DiagLog.add("[cold-start] startVPNTunnel called, waiting for .connected event")
                 } catch {
-                    finish(false, "VPN 启动失败:\(error.localizedDescription)")
+                    finish(false, "VPN start failed: \(error.localizedDescription)")
                     return
                 }
 
                 // 30 秒超时(与 restartVPNForNewCoordinates 保持一致)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) {
-                    finish(false, "VPN 连接超时,请重试")
+                    finish(false, "VPN connection timed out, please retry")
                 }
             }
         }
@@ -1013,10 +1013,10 @@ struct MapHomeView: View {
     /// 8 秒超时兜底,RestartState.finished token 防止超时与成功回调冲突。
     /// 整个过程藏在 setAsLocation 已设的 pending 幕布后,成功才弹"重启定位服务"教学。
     private func restartVPNForNewCoordinates(expectedLat: Double, expectedLon: Double) {
-        DiagLog.add("[热切] 进入 restartVPNForNewCoordinates")
+        DiagLog.add("[hot-restart] Entering restartVPNForNewCoordinates")
         guard let manager = ContentView.vpnManager else {
-            DiagLog.add("[热切] 失败:vpnManager 为 nil")
-            spoofingState = .failed(reason: "VPN 配置未初始化,请重启 App")
+            DiagLog.add("[hot-restart] Failed: vpnManager is nil")
+            spoofingState = .failed(reason: "VPN config not initialized. Please restart the app.")
             isSpoofing = false
             return
         }
@@ -1030,33 +1030,33 @@ struct MapHomeView: View {
                 NotificationCenter.default.removeObserver(observer)
             }
             if ok {
-                DiagLog.add("[热切] VPN 已重连,启动 Go 代理就绪探测(总超时 10 秒)")
+                DiagLog.add("[hot-restart] VPN reconnected, starting Go proxy readiness probe (timeout 10s)")
                 probeGoProxyReady(timeout: 10) { ready in
                     if ready {
-                        DiagLog.add("[热切] Go TCP 就绪,启动坐标确认(总超时 15 秒)")
+                        DiagLog.add("[hot-restart] Go TCP ready, starting coord confirmation (timeout 15s)")
                         confirmCoordsReady(expectedLat: expectedLat, expectedLon: expectedLon, timeout: 15) { matched in
                             if matched {
-                                DiagLog.add("[热切] 坐标已确认,0.3 秒后弹定位重启教学")
+                                DiagLog.add("[hot-restart] Coords confirmed, showing restart Location Services tutorial in 0.3s")
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                     showRestartLocationGuide = true
-                                    DiagLog.add("[热切] 已弹出重启定位服务教学")
+                                    DiagLog.add("[hot-restart] Restart Location Services tutorial shown")
                                     isSpoofing = false
                                 }
                             } else {
-                                DiagLog.add("[热切] 坐标确认超时,置 failed")
-                                spoofingState = .failed(reason: "坐标确认超时,请重试")
+                                DiagLog.add("[hot-restart] Coord confirmation timed out, setting failed")
+                                spoofingState = .failed(reason: "Coordinate confirmation timed out. Please retry.")
                                 isSpoofing = false
                             }
                         }
                     } else {
-                        DiagLog.add("[热切] Go TCP 就绪探测超时,置 failed")
-                        spoofingState = .failed(reason: "Go 代理就绪超时,请重试")
+                        DiagLog.add("[hot-restart] Go TCP readiness probe timed out, setting failed")
+                        spoofingState = .failed(reason: "Go proxy readiness timed out. Please retry.")
                         isSpoofing = false
                     }
                 }
             } else {
-                DiagLog.add("[热切] finish 失败:\(errMsg ?? "VPN 重连失败")")
-                spoofingState = .failed(reason: errMsg ?? "VPN 重连失败")
+                DiagLog.add("[hot-restart] finish failed:\(errMsg ?? "VPN reconnect failed")
+                spoofingState = .failed(reason: errMsg ?? "VPN reconnect failed")
                 isSpoofing = false
             }
         }
@@ -1073,18 +1073,18 @@ struct MapHomeView: View {
             guard let conn = notification.object as? NEVPNConnection,
                   conn === manager.connection else { return }
             let status = manager.connection.status
-            DiagLog.add("[热切] 观察者收到状态变化: \(status.diagDesc) phase=\(state.phase)")
+            DiagLog.add("[hot-restart] Observer received status change: \(status.diagDesc) phase=\(state.phase)")
             switch (state.phase, status) {
             case (0, .disconnected), (0, .invalid):
-                DiagLog.add("[热切] phase 0→1:tunnel 已停,调 startVPNTunnel 等待 .connected")
+                DiagLog.add("[hot-restart] phase 0→1: tunnel stopped, calling startVPNTunnel waiting for .connected")
                 state.phase = 1
                 do {
                     try manager.connection.startVPNTunnel()
                 } catch {
-                    finish(false, "VPN 启动失败:\(error.localizedDescription)")
+                    finish(false, "VPN start failed: \(error.localizedDescription)")
                 }
             case (1, .connected):
-                DiagLog.add("[热切] phase 1 收到 .connected,调 finish(true)")
+                DiagLog.add("[hot-restart] phase 1 got .connected, calling finish(true)")
                 finish(true, nil)
             default:
                 break  // 忽略 .connecting / .disconnecting / .reasserting 中间态
@@ -1098,16 +1098,16 @@ struct MapHomeView: View {
             do {
                 try manager.connection.startVPNTunnel()
             } catch {
-                finish(false, "VPN 启动失败:\(error.localizedDescription)")
+                finish(false, "VPN start failed: \(error.localizedDescription)")
             }
         } else {
-            DiagLog.add("[热切] 调 stopVPNTunnel,等 .disconnected 事件")
+            DiagLog.add("[hot-restart] Calling stopVPNTunnel, waiting for .disconnected event")
             manager.connection.stopVPNTunnel()
         }
 
         // 30 秒超时(放宽以适应 GoSpoofer 关闭 drain 与真机 NE 切换的真实耗时)
         DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) {
-            finish(false, "VPN 重连超时,请检查网络")
+            finish(false, "VPN reconnect timed out, check network")
         }
     }
 

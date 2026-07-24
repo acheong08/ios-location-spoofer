@@ -1,27 +1,34 @@
-# 任意门 - iOS 定位修改工具
+# Location Spoofer - iOS Location Spoofing Tool
 
-## 项目概述
-基于 acheong08/ios-location-spoofer 的 fork，改造成中文界面的定位修改工具"任意门"。
+## Project Overview
+Fork of acheong08/ios-location-spoofer, backported from Joy-cwz/ios-location-spoofer with fixes and feature improvements
+while reverting the rebranding back to "Location Spoofer" with English UI.
 
-## 技术栈
-- Swift / SwiftUI / iOS 原生
+## Tech Stack
+- Swift / SwiftUI / iOS native
 - MapKit + CoreLocation
 - Network Extension (VPN)
 - XcodeGen (project.yml)
-- GitHub Actions 云编译 + TestFlight 分发
+- GitHub Actions cloud build + TestFlight distribution
 
-## 关键文件
-- App/ContentView.swift — 主页（VPN控制 + 7步/4步引导流程）
-- App/CoordinateInputView.swift — 位置页（地图选点 + 搜索 + 收藏夹）
-- App/CoordinateConverter.swift — GCJ-02/WGS-84 坐标转换
-- App/LocationConfiguration.swift — 坐标存储配置
-- Resources/Info.plist — App 显示名"任意门"，含 ATS 例外
-- project.yml — XcodeGen 配置
-- .github/workflows/build.yml — CI 构建 + TestFlight 上传
+## Key Files
+- App/ContentView.swift — Entry point (routes to FirstSetupView or MapHomeView)
+- App/MapHomeView.swift — Main map interface (location spoofing + status + favorites)
+- App/FirstSetupView.swift — First-time setup flow (VPN auth + certificate install + trust)
+- App/CoordinateInputView.swift — Location picker (map selection + search + favorites)
+- App/CoordinateConverter.swift — GCJ-02/WGS-84 coordinate conversion
+- App/LocationConfiguration.swift — Coordinate storage config
+- App/SpoofingState.swift — Spoofing state machine (off/pending/on/failed)
+- App/DiagLog.swift — Diagnostics log collector
+- App/SettingsView.swift — Settings + diagnostics panel
+- App/CertificateInstaller.swift — Certificate install via Safari intercept
+- Resources/Info.plist — App display name "Location Spoofer", ATS exception
+- project.yml — XcodeGen config (bundle id: dev.duti.location-spoofer)
+- .github/workflows/build.yml — CI build + TestFlight upload
 
-## 编辑规则
-- 这是 Swift 项目，优先用 sed 做文本替换，避免 Edit 工具卡住
-- 大改动用 Write 工具直接覆盖整个文件
-- 所有用户可见文字为中文
-- 不要修改 Tunnel/ 和 GoSpoofer/ 目录的代码
-- commit 后统一 push，减少构建次数
+## Editing Rules
+- This is a Swift project, prefer sed for text replacement to avoid Edit tool issues
+- For large changes, use Write tool to overwrite entire files
+- All user-visible text is in English
+- Do not modify Tunnel/ and GoSpoofer/ core logic unless necessary
+- Commit then push together to reduce build count

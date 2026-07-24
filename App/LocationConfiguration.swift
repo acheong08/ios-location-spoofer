@@ -17,7 +17,7 @@ class LocationConfiguration: ObservableObject {
     static let shared = LocationConfiguration()
     
     private let userDefaults: UserDefaults
-    private let suiteName = "group.com.whitemirror.location-spoofer"
+    private let suiteName = "group.dev.duti.location-spoofer"
     
     private enum Keys {
         static let latitude = "spoofed_latitude"
