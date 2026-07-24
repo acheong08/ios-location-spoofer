@@ -2,7 +2,7 @@ name: location-spoofer
 options:
   bundleIdPrefix: dev.duti.location-spoofer
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "18.0"
   xcodeVersion: "15.0"
   generateEmptyDirectories: true
 
@@ -32,13 +32,15 @@ targets:
       - path: Resources
         excludes:
           - "**/.DS_Store"
-          - "Assets.xcassets"
-      - path: AppIcon.icon
+      - path: Resources/Assets.xcassets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.duti.location-spoofer
         INFOPLIST_FILE: Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: Resources/location-spoofer.entitlements
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Apple Distribution"
+        PROVISIONING_PROFILE_SPECIFIER: "LocationSpoofer AppStore"
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "$(inherited)"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
@@ -70,6 +72,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: dev.duti.location-spoofer.tunnel
         INFOPLIST_FILE: Tunnel/Info.plist
         CODE_SIGN_ENTITLEMENTS: Tunnel/location-spoofer-tunnel.entitlements
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Apple Distribution"
+        PROVISIONING_PROFILE_SPECIFIER: "LocationSpoofer Tunnel AppStore"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"

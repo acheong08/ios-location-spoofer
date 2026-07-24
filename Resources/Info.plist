@@ -10,6 +10,8 @@
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -31,7 +33,7 @@
     <dict/>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
-        <string>armv7</string>
+        <string>arm64</string>
     </array>
     <key>UISupportedInterfaceOrientations</key>
     <array>
@@ -46,5 +48,12 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App 启动时定位你当前所在区域,以便地图初始显示在你周围。不会持续追踪。</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

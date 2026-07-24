@@ -72,3 +72,11 @@ fastlane/test_output
 # Temporary files
 tmp/
 temp/
+
+# Signing material (keys, certs, profiles, base64 secrets)
+certs/
+new_icon.png
+fix_plist.py
+
+# Claude Code local settings
+.claude/settings.local.json

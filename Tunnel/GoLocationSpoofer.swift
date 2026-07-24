@@ -36,7 +36,7 @@ class GoLocationSpoofer {
     }
 
     private func getStoredCertificates() -> (cert: String, key: String)? {
-        let userDefaults = UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.dev.duti.location-spoofer")!
 
         guard let cert = userDefaults.string(forKey: caCertKey),
             let key = userDefaults.string(forKey: caKeyKey)
@@ -48,7 +48,7 @@ class GoLocationSpoofer {
     }
 
     private func storeCertificates(cert: String, key: String) {
-        let userDefaults = UserDefaults.standard
+        let userDefaults = UserDefaults(suiteName: "group.dev.duti.location-spoofer")!
         userDefaults.set(cert, forKey: caCertKey)
         userDefaults.set(key, forKey: caKeyKey)
         userDefaults.synchronize()
@@ -128,6 +128,24 @@ class GoLocationSpoofer {
 
     func isRunning() -> Bool {
         return proxyHandle != nil
+    }
+
+    /// 读 Go 进程当前持有的坐标(从 spoofLat/spoofLon/spoofingEnabled 全局)。
+    /// 用于 App 在弹"重启定位服务"教学前确认 Go 已加载新坐标,根治 UserDefaults 跨进程同步竞态。
+    func getCurrentCoords() -> (lat: Double, lon: Double, enabled: Bool)? {
+        guard proxyHandle != nil else { return nil }
+        let result = golocationspoofer_getcoords()
+        return (lat: Double(result.r0), lon: Double(result.r1), enabled: result.r2 != 0)
+    }
+
+    /// 拉取并清空 Go 端环形日志缓冲(handleLocationRequest 的逐次追踪)。
+    /// 返回最近 maxLogEntries 条 logEvent 拼接的字符串;无日志/未启动返回 nil。
+    func drainGoLogs() -> String? {
+        guard proxyHandle != nil else { return nil }
+        guard let cString = golocationspoofer_drainlogs() else { return nil }
+        let logs = String(cString: cString)
+        free(cString)
+        return logs.isEmpty ? nil : logs
     }
 
 }

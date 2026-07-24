@@ -1,223 +1,261 @@
-//
-//  CoordinateInputView.swift
-//  location-spoofer
-//
-//  View for entering coordinates to spoof location
-//
-
 import SwiftUI
-import UIKit
+import MapKit
+
+struct SavedLocation: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var latitude: Double
+    var longitude: Double
+    init(name: String, latitude: Double, longitude: Double) {
+        self.id = UUID()
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+}
 
 struct CoordinateInputView: View {
-    @StateObject private var locationConfig = LocationConfiguration.shared
-    @State private var latitudeText: String = ""
-    @State private var longitudeText: String = ""
-    @State private var showingPresetLocations = false
-    @State private var saveError: String?
+    var onLocationConfirmed: (() -> Void)? = nil
+    @State private var locationConfig = LocationConfiguration.shared
+    @State private var searchText = ""
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 39.9042, longitude: 116.4074),
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+    )
+    @State private var pin: CLLocationCoordinate2D? = nil
+    @State private var selectedName = ""
+    @State private var showingConfirm = false
+    @State private var showingAddFavorite = false
+    @State private var favoriteName = ""
+    @State private var savedLocations: [SavedLocation] = []
+    @State private var currentLocationName: String? = nil
     @State private var showingSaveAlert = false
-    
+    @State private var saveError: String? = nil
+    @State private var showLocationSetAlert = false
+    private let savedLocationsKey = "savedLocations"
+
     var body: some View {
         NavigationView {
-            Form {
-                Section {
-                    VStack(alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Latitude")
-                                .font(.headline)
-                            
-                            TextField("e.g., 40.7128", text: $latitudeText)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.decimalPad)
-                                .onChange(of: latitudeText) { _, newValue in
-                                    validateAndSave()
-                                }
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Longitude")
-                                .font(.headline)
-                            
-                            TextField("e.g., -74.0060", text: $longitudeText)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.decimalPad)
-                                .onChange(of: longitudeText) { _, newValue in
-                                    validateAndSave()
-                                }
+            ScrollView {
+                VStack(spacing: 16) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        TextField("Search a place, e.g. Times Square", text: $searchText)
+                            .onSubmit { searchLocation() }
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
-                } header: {
-                    Text("Target Coordinates")
-                } footer: {
-                    Text("Enter the latitude and longitude you want to spoof your location to. Valid range: Latitude -90 to 90, Longitude -180 to 180.")
-                }
-                
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        if let coords = locationConfig.currentCoordinates {
+                    .padding(12)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .cornerRadius(10)
+
+                    MapReader { proxy in
+                        Map(position: .constant(.region(region))) {
+                            if let pin = pin {
+                                Marker("Target Location", coordinate: pin)
+                                    .tint(.red)
+                            }
+                        }
+                        .onTapGesture { position in
+                            if let coordinate = proxy.convert(position, from: .local) {
+                                selectLocation(coordinate: coordinate, name: nil)
+                            }
+                        }
+                    }
+                    .frame(height: 280)
+                    .cornerRadius(12)
+
+                    VStack(spacing: 8) {
+                        if let name = currentLocationName {
                             HStack {
-                                Text("Current Settings:")
+                                Image(systemName: "location.fill")
+                                    .foregroundColor(.green)
+                                Text("Current location: \(name)")
+                                    .font(.body)
+                                    .fontWeight(.medium)
+                                Spacer()
+                            }
+                        } else {
+                            HStack {
+                                Image(systemName: "location.slash")
+                                    .foregroundColor(.secondary)
+                                Text("No location set")
+                                    .font(.body)
                                     .foregroundColor(.secondary)
                                 Spacer()
-                                Text(String(format: "%.6f, %.6f", coords.latitude, coords.longitude))
-                                    .font(.system(.body, design: .monospaced))
                             }
-                            .padding(.vertical, 8)
-                            
-                            Button("Clear Coordinates") {
-                                clearCoordinates()
-                            }
-                            .foregroundColor(.red)
-                        } else {
-                            Text("No coordinates configured")
-                                .foregroundColor(.secondary)
-                                .italic()
                         }
                     }
-                } header: {
-                    Text("Status")
-                }
-                
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Common Locations")
-                            .font(.headline)
-                        
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 12) {
-                            PresetLocationButton(name: "New York", lat: 40.7128, lon: -74.0060, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                            
-                            PresetLocationButton(name: "London", lat: 51.5074, lon: -0.1278, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                            
-                            PresetLocationButton(name: "Tokyo", lat: 35.6762, lon: 139.6503, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                            
-                            PresetLocationButton(name: "Sydney", lat: -33.8688, lon: 151.2093, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                            
-                            PresetLocationButton(name: "Paris", lat: 48.8566, lon: 2.3522, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                            
-                            PresetLocationButton(name: "Los Angeles", lat: 34.0522, lon: -118.2437, onTap: { lat, lon in
-                                setCoordinates(lat: lat, lon: lon)
-                            })
-                        }
-                    }
-                } header: {
-                    Text("Quick Presets")
-                } footer: {
-                    Text("Tap any preset to quickly set those coordinates. Your VPN must be restarted for changes to take effect.")
-                }
-                
-                Section {
+                    .padding(12)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .cornerRadius(10)
+
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Installation Guide")
-                            .font(.headline)
-                        
-                        Text("To use location spoofing:")
-                            .font(.subheadline)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("1. Enable the VPN from the VPN tab")
-                            Text("2. Visit mitm.it in Safari")
-                            Text("3. Install the CA certificate")
-                            Text("4. Trust the certificate in Settings > General > VPN & Device Management")
-                            Text("5. Restart the VPN connection")
+                        HStack {
+                            Text("Favorites")
+                                .font(.headline)
+                            Spacer()
+                            Button(action: { showingAddFavorite = true }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title3)
+                            }
                         }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        if savedLocations.isEmpty {
+                            Text("No favorites yet. Tap + to add a location.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.vertical, 4)
+                        } else {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 10) {
+                                ForEach(savedLocations) { loc in
+                                    Button(action: {
+                                        let coord = CLLocationCoordinate2D(latitude: loc.latitude, longitude: loc.longitude)
+                                        selectLocation(coordinate: coord, name: loc.name)
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "mappin.circle.fill")
+                                                .foregroundColor(.blue)
+                                            Text(loc.name)
+                                                .font(.subheadline)
+                                                .lineLimit(1)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .padding(.horizontal, 12)
+                                        .background(Color(UIColor.tertiarySystemBackground))
+                                        .cornerRadius(8)
+                                    }
+                                    .foregroundColor(.primary)
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            deleteFavorite(loc)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                } header: {
-                    Text("Setup Instructions")
+                    .padding(12)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .cornerRadius(10)
                 }
+                .padding()
             }
-            .navigationTitle("Location Settings")
-            .onAppear {
-                loadCurrentCoordinates()
+            .navigationTitle("Location")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert("Confirm Location", isPresented: $showingConfirm) {
+                Button("Confirm") { confirmLocation() }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Set location to: \(selectedName)")
+            }
+            .alert("Add Favorite", isPresented: $showingAddFavorite) {
+                TextField("Location name", text: $favoriteName)
+                Button("Save") { addCurrentAsFavorite() }
+                Button("Cancel", role: .cancel) { favoriteName = "" }
+            } message: {
+                Text("Name this location")
             }
             .alert("Save Error", isPresented: $showingSaveAlert) {
                 Button("OK") {}
             } message: {
                 Text(saveError ?? "Failed to save coordinates")
             }
+            .alert("Location Set", isPresented: $showLocationSetAlert) {
+                Button("OK") { }
+            } message: {
+                Text("Location set to: \(selectedName). Return to the home screen and follow the prompt to restart VPN for the new location to take effect.")
+            }
+            .onAppear {
+                loadSavedLocations()
+                loadCurrentLocation()
+            }
         }
     }
-    
-    private func loadCurrentCoordinates() {
+
+    private func selectLocation(coordinate: CLLocationCoordinate2D, name: String?) {
+        pin = coordinate
+        region.center = coordinate
+        if let name = name {
+            selectedName = name
+            showingConfirm = true
+        } else {
+            let geocoder = CLGeocoder()
+            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            geocoder.reverseGeocodeLocation(location) { placemarks, error in
+                if let placemark = placemarks?.first {
+                    let components = [placemark.locality, placemark.subLocality, placemark.name].compactMap { $0 }
+                    selectedName = components.joined(separator: " ")
+                    if selectedName.isEmpty {
+                        selectedName = String(format: "%.4f, %.4f", coordinate.latitude, coordinate.longitude)
+                    }
+                } else {
+                    selectedName = String(format: "%.4f, %.4f", coordinate.latitude, coordinate.longitude)
+                }
+                showingConfirm = true
+            }
+        }
+    }
+
+    private func confirmLocation() {
+        guard let pin = pin else { return }
+        let converted = CoordinateConverter.gcj02ToWgs84(lat: pin.latitude, lng: pin.longitude)
+        locationConfig.setCoordinates(latitude: converted.latitude, longitude: converted.longitude)
+        currentLocationName = selectedName
+        UserDefaults.standard.set(selectedName, forKey: "currentLocationName")
+        showLocationSetAlert = true
+        onLocationConfirmed?()
+    }
+
+    private func searchLocation() {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = searchText
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            guard let response = response, let item = response.mapItems.first else { return }
+            let coord = item.placemark.coordinate
+            selectLocation(coordinate: coord, name: item.name ?? searchText)
+        }
+    }
+
+    private func loadSavedLocations() {
+        if let data = UserDefaults.standard.data(forKey: savedLocationsKey),
+           let locations = try? JSONDecoder().decode([SavedLocation].self, from: data) {
+            savedLocations = locations
+        }
+    }
+
+    private func saveFavorites() {
+        if let data = try? JSONEncoder().encode(savedLocations) {
+            UserDefaults.standard.set(data, forKey: savedLocationsKey)
+        }
+    }
+
+    private func addCurrentAsFavorite() {
+        guard let pin = pin, !favoriteName.isEmpty else { return }
+        let loc = SavedLocation(name: favoriteName, latitude: pin.latitude, longitude: pin.longitude)
+        savedLocations.append(loc)
+        saveFavorites()
+        favoriteName = ""
+    }
+
+    private func deleteFavorite(_ location: SavedLocation) {
+        savedLocations.removeAll { $0.id == location.id }
+        saveFavorites()
+    }
+
+    private func loadCurrentLocation() {
+        currentLocationName = UserDefaults.standard.string(forKey: "currentLocationName")
         if let coords = locationConfig.currentCoordinates {
-            latitudeText = String(format: "%.6f", coords.latitude)
-            longitudeText = String(format: "%.6f", coords.longitude)
+            pin = CLLocationCoordinate2D(latitude: coords.latitude, longitude: coords.longitude)
+            region.center = pin!
         }
     }
-    
-    private func setCoordinates(lat: Double, lon: Double) {
-        latitudeText = String(format: "%.6f", lat)
-        longitudeText = String(format: "%.6f", lon)
-        validateAndSave()
-    }
-    
-    private func clearCoordinates() {
-        latitudeText = ""
-        longitudeText = ""
-        locationConfig.clearCoordinates()
-    }
-    
-    private func validateAndSave() {
-        guard let lat = Double(latitudeText), let lon = Double(longitudeText) else {
-            if !latitudeText.isEmpty || !longitudeText.isEmpty {
-                saveError = "Please enter valid coordinates"
-                showingSaveAlert = true
-            }
-            return
-        }
-        
-        guard lat >= -90 && lat <= 90 else {
-            saveError = "Latitude must be between -90 and 90"
-            showingSaveAlert = true
-            return
-        }
-        
-        guard lon >= -180 && lon <= 180 else {
-            saveError = "Longitude must be between -180 and 180"
-            showingSaveAlert = true
-            return
-        }
-        
-        locationConfig.setCoordinates(latitude: lat, longitude: lon)
-    }
-}
-
-struct PresetLocationButton: View {
-    let name: String
-    let lat: Double
-    let lon: Double
-    let onTap: (Double, Double) -> Void
-    
-    var body: some View {
-        Button {
-            onTap(lat, lon)
-        } label: {
-            VStack(spacing: 4) {
-                Image(systemName: "mappin.circle.fill")
-                    .font(.title2)
-                Text(name)
-                    .font(.caption)
-                    .lineLimit(1)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(Color(UIColor.secondarySystemBackground))
-            .cornerRadius(8)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-#Preview {
-    CoordinateInputView()
 }

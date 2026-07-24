@@ -211,10 +211,10 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					05BE400C38853567CF92D63D = {
-						DevelopmentTeam = RL3VF87PQT;
+						DevelopmentTeam = 3MPFZ2L92C;
 					};
 					355368F9AAA53B0D37577ED8 = {
-						DevelopmentTeam = RL3VF87PQT;
+						DevelopmentTeam = 3MPFZ2L92C;
 					};
 				};
 			};
@@ -292,13 +292,15 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Resources/location-spoofer.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whitemirror.location-spoofer";
+				PROVISIONING_PROFILE_SPECIFIER = "LocationSpoofer AppStore";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -308,6 +310,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Tunnel/location-spoofer-tunnel.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/GoSpoofer",
 				);
@@ -324,7 +328,8 @@
 					"$(inherited)",
 					"-lgolocationspoofer",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer.tunnel";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whitemirror.location-spoofer.tunnel";
+				PROVISIONING_PROFILE_SPECIFIER = "LocationSpoofer Tunnel AppStore";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Tunnel/location-spoofer-tunnel-Bridging-Header.h";
@@ -368,7 +373,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = RL3VF87PQT;
+				DEVELOPMENT_TEAM = 3MPFZ2L92C;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -404,13 +409,15 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Resources/location-spoofer.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whitemirror.location-spoofer";
+				PROVISIONING_PROFILE_SPECIFIER = "LocationSpoofer AppStore";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -452,7 +459,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = RL3VF87PQT;
+				DEVELOPMENT_TEAM = 3MPFZ2L92C;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -479,6 +486,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Tunnel/location-spoofer-tunnel.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/GoSpoofer",
 				);
@@ -495,7 +504,8 @@
 					"$(inherited)",
 					"-lgolocationspoofer",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.duti.location-spoofer.tunnel";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whitemirror.location-spoofer.tunnel";
+				PROVISIONING_PROFILE_SPECIFIER = "LocationSpoofer Tunnel AppStore";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Tunnel/location-spoofer-tunnel-Bridging-Header.h";
