@@ -1,0 +1,39 @@
+name: Build unsigned IPA
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Install gomobile
+        run: |
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          go install golang.org/x/mobile/cmd/gobind@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+      - name: Build GoSpoofer
+        working-directory: GoSpoofer
+        run: |
+          gomobile init || true
+          bash make.sh
+      - name: Build app (no signing)
+        run: |
+          SCHEME=$(xcodebuild -list -json -project location-spoofer.xcodeproj \
+            | python3 -c 'import json,sys;s=json.load(sys.stdin)["project"].get("schemes",[]);print(s[0] if s else "")')
+          if [ -n "$SCHEME" ]; then SEL=(-scheme "$SCHEME"); else SEL=(-alltargets); fi
+          xcodebuild -project location-spoofer.xcodeproj "${SEL[@]}" \
+            -configuration Release -sdk iphoneos -derivedDataPath build \
+            SYMROOT="$PWD/build/Products" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: Package IPA
+        run: |
+          APP=$(find build -path "*Release-iphoneos/*.app" -maxdepth 6 -type d | grep -v appex | head -1)
+          test -n "$APP" || { echo "no .app found"; exit 1; }
+          mkdir Payload && cp -R "$APP" Payload/
+          zip -qry location-spoofer-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: location-spoofer-ipa
+          path: location-spoofer-unsigned.ipa
